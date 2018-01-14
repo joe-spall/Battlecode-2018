@@ -32,6 +32,7 @@ public class Player {
         // Direction is a normal java enum.
         Direction[] directions = Direction.values();
         HashMap<Integer, Direction> unitDirections = new HashMap();
+        gc.queueResearch(UnitType.Rocket);
         while (true) {
             System.out.println("Current round: "+gc.round());
             System.out.println("Current Karb: "+gc.karbonite());
@@ -46,13 +47,12 @@ public class Player {
 
                     boolean harvested = false;
 
-                    //if over 150 karbonite, build a factory
-                    if (gc.karbonite() > 150) {
-                        for (Direction direction: directions) {
-                            if (gc.canBlueprint(id, UnitType.Factory, direction)) {
-                                gc.blueprint(id, UnitType.Factory, direction);
-                                break;
-                            }
+
+                    VecUnit nearbyRockets = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
+                    for (int k = 0; k < nearbyRockets.size(); k++) {
+                        Unit rocket = nearbyRockets.get(k);
+                        if (gc.canBuild(id, rocket.id())) {
+                            gc.build(id, rocket.id());
                         }
                     }
 
@@ -63,6 +63,22 @@ public class Player {
                             gc.build(id, factory.id());
                         }
                     }
+
+                    //if over 150 karbonite, build a factory
+                    if (gc.karbonite() > 150) {
+                        for (Direction direction: directions) {
+                            if (gc.canBlueprint(id, UnitType.Rocket, direction) && nearbyRockets.size() != 0) {
+                                gc.blueprint(id, UnitType.Rocket, direction);
+                                break;
+                            }
+                            if (gc.canBlueprint(id, UnitType.Factory, direction) && nearbyUnits.size() != 0) {
+                                gc.blueprint(id, UnitType.Factory, direction);
+                                break;
+                            }
+                        }
+                    }
+
+
                     for (Direction direction: directions) {
                             if (gc.canBlueprint(id, UnitType.Factory, direction)) {
                                 gc.blueprint(id, UnitType.Factory, direction);
