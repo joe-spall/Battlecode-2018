@@ -10,6 +10,8 @@ public class Player {
         Extra extra = new Extra(27);
         System.out.println(extra.toString());
 
+
+
         // MapLocation is a data structure you'll use a lot.
         MapLocation loc = new MapLocation(Planet.Earth, 10, 20);
         System.out.println("loc: "+loc+", one step to the Northwest: "+loc.add(Direction.Northwest));
@@ -21,7 +23,12 @@ public class Player {
 
         // Connect to the manager, starting the game
         GameController gc = new GameController();
-
+        Team enemy = null;
+        if (gc.team().equals(Team.Blue)) {
+            enemy = Team.Red;
+        } else {
+            enemy = Team.Blue;
+        }
         // Direction is a normal java enum.
         Direction[] directions = Direction.values();
         HashMap<Integer, Direction> unitDirections = new HashMap();
@@ -132,9 +139,46 @@ public class Player {
                     }
 
                 } else if (unit.unitType().equals(UnitType.Mage)) {
-                    if (unitDirections.containsKey(id)) {
 
-                        if (gc.canMove(id,unitDirections.get(id)) && gc.isMoveReady(id)) {
+                    if (unitDirections.containsKey(id)) {
+                        System.out.println(unit.attackRange());
+                        VecUnit nearbyUnits = gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), unit.attackRange(), enemy);
+                        if (nearbyUnits.size() != 0) {
+                            System.out.println("Found nearby unit");
+                            long minDistance = unit.attackRange();
+                            int min = 0;
+                            long maxDistance = 0;
+                            int max = 0;
+                            for (int k = 0; k < nearbyUnits.size(); k++) {
+                                Unit enemyUnit = nearbyUnits.get(k);
+                                if (enemyUnit.location().mapLocation().
+                                    distanceSquaredTo(unit.location().mapLocation()) < minDistance) {
+                                    minDistance = enemyUnit.location().mapLocation().distanceSquaredTo(unit.location().mapLocation());
+                                    min = k;
+                                }
+                                if (enemyUnit.location().mapLocation().
+                                    distanceSquaredTo(unit.location().mapLocation()) > maxDistance) {
+                                    maxDistance = enemyUnit.location().mapLocation().distanceSquaredTo(unit.location().mapLocation());
+                                    max = k;
+                                }
+                            }
+                            Unit minUnit = nearbyUnits.get(min);
+                            Unit maxUnit = nearbyUnits.get(max);
+                            if (gc.isMoveReady(id) && gc.canMove(
+
+                                id, bc.bcDirectionOpposite(minUnit.location().mapLocation().directionTo(unit.location().mapLocation())))) {
+                                System.out.println("Attacking close");
+                                gc.moveRobot(id, bc.bcDirectionOpposite(minUnit.location().mapLocation().directionTo(unit.location().mapLocation())));
+                                if (gc.canAttack(id, minUnit.id()) && gc.isAttackReady(id)) {
+                                    gc.attack(id, minUnit.id());
+                                }
+                            } else {
+                                System.out.println("Attacking far");
+                                if (gc.canAttack(id, maxUnit.id()) && gc.isAttackReady(id)) {
+                                    gc.attack(id, maxUnit.id());
+                                }
+                            }
+                        } else if (gc.canMove(id,unitDirections.get(id)) && gc.isMoveReady(id)) {
                             gc.moveRobot(id,unitDirections.get(id));
                         } else {
                             Direction newDirection = unitDirections.get(id);
