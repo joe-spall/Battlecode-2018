@@ -33,13 +33,26 @@ public class Player {
         Direction[] directions = Direction.values();
         HashMap<Integer, Direction> unitDirections = new HashMap();
         gc.queueResearch(UnitType.Rocket);
+        UnitManager unitManager = new UnitManager();
+
+        VecUnit initialUnits = gc.myUnits();
+        for (int i = 0; i < initialUnits.size(); i++) {
+
+            Unit unit = initialUnits.get(i);
+            BoogUnit boogUnit = new BoogUnit(unit);
+            unitManager.add(boogUnit);
+        }
+        unitManager.printList();
+
         while (true) {
             System.out.println("Current round: "+gc.round());
             System.out.println("Current Karb: "+gc.karbonite());
+            unitManager.printList();
             // VecUnit is a class that you can think of as similar to ArrayList<Unit>, but immutable.
             VecUnit units = gc.myUnits();
 
             for (int i = 0; i < units.size(); i++) {
+
                 Unit unit = units.get(i);
                 int id = unit.id();
                 if (unit.unitType().equals(UnitType.Worker)) {
@@ -69,10 +82,22 @@ public class Player {
                         for (Direction direction: directions) {
                             if (gc.canBlueprint(id, UnitType.Rocket, direction) && nearbyRockets.size() != 0) {
                                 gc.blueprint(id, UnitType.Rocket, direction);
+                                MapLocation workerLocation = unit.location().mapLocation();
+                                MapLocation rocketLocation = workerLocation.add(direction);
+                                Unit newUnit = gc.senseUnitAtLocation(rocketLocation);
+                                BoogUnit boog = new BoogUnit(newUnit);
+                                unitManager.add(boog);
+                                unitManager.printList();
                                 break;
                             }
                             if (gc.canBlueprint(id, UnitType.Factory, direction) && nearbyUnits.size() != 0) {
                                 gc.blueprint(id, UnitType.Factory, direction);
+                                MapLocation workerLocation = unit.location().mapLocation();
+                                MapLocation factoryLocation = workerLocation.add(direction);
+                                Unit newUnit = gc.senseUnitAtLocation(factoryLocation);
+                                BoogUnit boog = new BoogUnit(newUnit);
+                                unitManager.add(boog);
+                                unitManager.printList();
                                 break;
                             }
                         }
@@ -149,7 +174,11 @@ public class Player {
                         if (gc.canUnload(id, direction)) {
                             System.out.println("Unloaded");
                             gc.unload(id, direction);
-
+                            MapLocation factoryLocation = unit.location().mapLocation();
+                            MapLocation nextLocation = factoryLocation.add(direction);
+                            Unit newUnit = gc.senseUnitAtLocation(nextLocation);
+                            BoogUnit boog = new BoogUnit(newUnit);
+                            unitManager.add(boog);
                             break;
                         }
                     }
