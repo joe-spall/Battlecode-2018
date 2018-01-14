@@ -47,44 +47,45 @@ public class Player {
 
                     boolean harvested = false;
 
-
-                    VecUnit nearbyRockets = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
-                    for (int k = 0; k < nearbyRockets.size(); k++) {
-                        Unit rocket = nearbyRockets.get(k);
-                        if (gc.canBuild(id, rocket.id())) {
-                            gc.build(id, rocket.id());
-                        }
-                    }
-
-                    VecUnit nearbyUnits = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Factory);
-                    for (int k = 0; k < nearbyUnits.size(); k++) {
-                        Unit factory = nearbyUnits.get(k);
-                        if (gc.canBuild(id, factory.id())) {
-                            gc.build(id, factory.id());
-                        }
-                    }
-
-                    //if over 150 karbonite, build a factory
-                    if (gc.karbonite() > 150) {
-                        for (Direction direction: directions) {
-                            if (gc.canBlueprint(id, UnitType.Rocket, direction) && nearbyRockets.size() != 0) {
-                                gc.blueprint(id, UnitType.Rocket, direction);
-                                break;
+                    if (!unit.location().isInGarrison()) {
+                        VecUnit nearbyRockets = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
+                        for (int k = 0; k < nearbyRockets.size(); k++) {
+                            Unit rocket = nearbyRockets.get(k);
+                            if (gc.canBuild(id, rocket.id())) {
+                                gc.build(id, rocket.id());
                             }
-                            if (gc.canBlueprint(id, UnitType.Factory, direction) && nearbyUnits.size() != 0) {
-                                gc.blueprint(id, UnitType.Factory, direction);
-                                break;
+                        }
+
+                        VecUnit nearbyUnits = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Factory);
+                        for (int k = 0; k < nearbyUnits.size(); k++) {
+                            Unit factory = nearbyUnits.get(k);
+                            if (gc.canBuild(id, factory.id())) {
+                                gc.build(id, factory.id());
+                            }
+                        }
+
+                        //if over 150 karbonite, build a factory
+                        if (gc.karbonite() > 150) {
+                            for (Direction direction: directions) {
+                                if (gc.canBlueprint(id, UnitType.Rocket, direction) && nearbyRockets.size() == 0) {
+                                    gc.blueprint(id, UnitType.Rocket, direction);
+                                    break;
+                                }
+                                if (gc.canBlueprint(id, UnitType.Factory, direction) && nearbyUnits.size() < 2) {
+                                    gc.blueprint(id, UnitType.Factory, direction);
+                                    break;
+                                }
                             }
                         }
                     }
 
 
                     for (Direction direction: directions) {
-                            if (gc.canBlueprint(id, UnitType.Factory, direction)) {
-                                gc.blueprint(id, UnitType.Factory, direction);
-                                break;
-                            }
+                        if (gc.canBlueprint(id, UnitType.Factory, direction)) {
+                            gc.blueprint(id, UnitType.Factory, direction);
+                            break;
                         }
+                    }
                     if(gc.canHarvest(id,Direction.North)){
                         gc.canHarvest(id,Direction.North);
                         System.out.println("Harvested N");
@@ -138,8 +139,13 @@ public class Player {
 
                     }
                 } else if (unit.unitType().equals(UnitType.Factory)) {
+                    //if it can produce a worker, it does
+                    if (gc.canProduceRobot(id, UnitType.Worker) && units.size() < 10) {
+                        gc.produceRobot(id, UnitType.Worker);
+                        System.out.println("Worker Created");
+                    }
                     //if it can produce a mage, it does
-                    if (gc.canProduceRobot(id, UnitType.Mage) && units.size() < 15) {
+                    if (gc.canProduceRobot(id, UnitType.Mage) && units.size() < 15 && false) {
                         gc.produceRobot(id, UnitType.Mage);
                         System.out.println("Mage Created");
                     }
