@@ -1,3 +1,5 @@
+import bc.*;
+
 public class MageUnit extends BoogUnit {
 
     public MageUnit(Unit unit) {

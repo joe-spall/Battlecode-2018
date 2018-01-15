@@ -1,3 +1,4 @@
+import bc.*;
 public class WorkerUnit extends BoogUnit {
 
     public WorkerUnit(Unit unit) {

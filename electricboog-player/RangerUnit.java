@@ -1,3 +1,4 @@
+import bc.*;
 public class RangerUnit extends BoogUnit {
 
     public RangerUnit(Unit unit) {

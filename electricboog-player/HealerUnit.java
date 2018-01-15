@@ -1,3 +1,4 @@
+import bc.*;
 public class HealerUnit extends BoogUnit {
 
     public HealerUnit(Unit unit) {

@@ -1,3 +1,4 @@
+import bc.*;
 public class FactoryUnit extends BoogUnit {
 
     public FactoryUnit(Unit unit) {
