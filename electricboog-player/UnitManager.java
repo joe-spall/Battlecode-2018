@@ -1,5 +1,6 @@
 import bc.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 class UnitManager {
     private ArrayList<BoogUnit>[] units;
@@ -11,10 +12,11 @@ class UnitManager {
         for (int k = 0; k < 7; k++) {
             units[k] = new ArrayList<>();
         }
-        tagUnits = new ArrayList[17];
-        for (int k = 0; k < 17; k++) {
-            tagUnits[k] = new ArrayList<>();
-        }
+        tagUnits = new HashMap<>();
+    }
+
+    public ArrayList<BoogUnit>[] getUnits() {
+        return units;
     }
 
     public int getNumWorkers() {
@@ -106,18 +108,61 @@ class UnitManager {
         }
     }
 
-    public void changeTag(BoogUnit unit, char tag) {
-        if (unit.getTag() == '0') {
+    public void remove(BoogUnit unit) {
+        UnitType type = unit.getUnit().unitType();
+        if (type.equals(UnitType.Worker)) {
+            units[0].remove(unit);
+        } else if (type.equals(UnitType.Knight)) {
+            units[1].remove(unit);
+        } else if (type.equals(UnitType.Ranger)) {
+            units[2].remove(unit);
+        } else if (type.equals(UnitType.Mage)) {
+            units[3].remove(unit);
+        } else if (type.equals(UnitType.Healer)) {
+            units[4].remove(unit);
+        } else if (type.equals(UnitType.Rocket)) {
+            units[5].remove(unit);
+        } else if (type.equals(UnitType.Factory)) {
+            units[6].remove(unit);
+        }
+    }
+
+    public void changeMovementTag(BoogUnit unit, char tag) {
+        if (unit.getMovementTag() == '0') {
             if (tagUnits.containsKey(tag)) {
-                tagUnits.replace(tag, tagUnits.get(char).add(unit));
+                tagUnits.get(tag).add(unit);
+            } else {
+                ArrayList<BoogUnit> newArray = new ArrayList<BoogUnit>();
+                newArray.add(unit);
+                tagUnits.put(tag, newArray);
             }
         } else {
             if (tagUnits.containsKey(tag)) {
-                tagUnits.replace(tag, tagUnits.get(char).add(unit));
-                tagUnits.replace(unit.getTag(), tagUnits.get(unit.getTag().remove(unit)));
+
+                tagUnits.get(tag).add(unit);
+                tagUnits.get(unit.getMovementTag()).remove(unit);
             }
         }
-        unit.setTag(tag);
+        unit.setMovementTag(tag);
+    }
+
+    public void changeStatusTag(BoogUnit unit, char tag) {
+        if (unit.getStatusTag() == '0') {
+            if (tagUnits.containsKey(tag)) {
+                tagUnits.get(tag).add(unit);
+            } else {
+                ArrayList<BoogUnit> newArray = new ArrayList<BoogUnit>();
+                newArray.add(unit);
+                tagUnits.put(tag, newArray);
+            }
+        } else {
+            if (tagUnits.containsKey(tag)) {
+
+                tagUnits.get(tag).add(unit);
+                tagUnits.get(unit.getStatusTag()).remove(unit);
+            }
+        }
+        unit.setStatusTag(tag);
     }
 
     public void printList() {

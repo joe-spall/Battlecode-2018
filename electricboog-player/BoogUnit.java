@@ -1,23 +1,47 @@
 import bc.*;
 
-class BoogUnit {
+abstract class BoogUnit {
     private Unit unit;
-    private char tag;
+    private char movementTag;
+    private char statusTag;
     BoogUnit(Unit unit) {
         this.unit = unit;
-        tag = '0';
+        movementTag = '0';
+        statusTag = '0';
     }
 
-    public void setTag(char tagName) {
+    public void setMovementTag(char tagName) {
 
-        tag = tagName;
+        movementTag = tagName;
     }
 
-    public char getTag() {
-        return tag;
+    public char getMovementTag() {
+        return movementTag;
+    }
+
+    public void setStatusTag(char tagName) {
+        statusTag = tagName;
+    }
+
+    public char getStatusTag() {
+        return statusTag;
     }
 
     public Unit getUnit() {
         return unit;
     }
+
+    /*
+        implement single vision method for all
+        BoogUnits that updates the grid based on its current vision
+    */
+    public void vision() {
+
+    }
+
+    public abstract void adjustTag();
+
+    public abstract void move();
+
+    public abstract void attack();
 }

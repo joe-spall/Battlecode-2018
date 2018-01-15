@@ -3,6 +3,7 @@
 import bc.*;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.ArrayList;
 
 public class Player {
 
@@ -66,9 +67,25 @@ public class Player {
             System.out.println("Current Karb: "+gc.karbonite());
             unitManager.printList();
             // VecUnit is a class that you can think of as similar to ArrayList<Unit>, but immutable.
-            VecUnit units = gc.myUnits();
-
-            for (int i = 0; i < units.size(); i++) {
+            ArrayList<BoogUnit>[] units = unitManager.getUnits();
+            ArrayList<BoogUnit> deadList = new ArrayList();
+            for (int k = 0; k < 7; k++) {
+                for (int j = 0; j < units[k].size(); j++) {
+                    BoogUnit unit = units[k].get(j);
+                    if (unit.getUnit().health() == 0 && unit.getUnit().location().isInGarrison() == false) {
+                        deadList.add(unit);
+                        continue;
+                    }
+                    unit.vision();
+                    unit.adjustTag();
+                    unit.move();
+                    unit.attack();
+                }
+            }
+            for (BoogUnit dead : deadList) {
+                unitManager.remove(dead);
+            }
+            /*for (int i = 0; i < units.size(); i++) {
 
                 Unit unit = units.get(i);
                 int id = unit.id();
@@ -275,6 +292,8 @@ public class Player {
 
 
             }
+            unitManager.update();
+            */
             // Submit the actions we've done, and wait for our next turn.
             gc.nextTurn();
         }
