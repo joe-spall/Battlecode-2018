@@ -5,6 +5,23 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Player {
+
+    private final static char ROCKET_WORKER = 'a';
+    private final static char FACTORY_WORKER = 'b';
+    private final static char EARTH_FARM_WORKER = 'c';
+    private final static char MARS_FARM_WORKER = 'd';
+    private final static char EARTH_DEFENSE_KNIGHT = 'e';
+    private final static char MARS_DEFENSE_KNIGHT = 'f';
+    private final static char EARTH_ATTACK_KNIGHT = 'g';
+    private final static char MARS_ATTACK_KNIGHT = 'h';
+    private final static char EARTH_MAGE = 'i';
+    private final static char MARS_MAGE = 'j';
+    private final static char EARTH_SCOUT_RANGER = 'k';
+    private final static char MARS_SCOUT_RANGER = 'l';
+    private final static char SNIPER_RANGER = 'm';
+    private final static char EARTH_HEALER = 'n';
+    private final static char MARS_HEALER = 'o';
+
     public static void main(String[] args) {
         // You can use other files in this directory, and in subdirectories.
         Extra extra = new Extra(27);

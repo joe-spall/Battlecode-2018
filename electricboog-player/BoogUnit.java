@@ -9,6 +9,7 @@ class BoogUnit {
     }
 
     public void setTag(char tagName) {
+
         tag = tagName;
     }
 

@@ -3,10 +3,17 @@ import java.util.ArrayList;
 
 class UnitManager {
     private ArrayList<BoogUnit>[] units;
+    private HashMap<Character, ArrayList<BoogUnit>> tagUnits;
+
+
     UnitManager() {
         units = new ArrayList[7];
         for (int k = 0; k < 7; k++) {
             units[k] = new ArrayList<>();
+        }
+        tagUnits = new ArrayList[17];
+        for (int k = 0; k < 17; k++) {
+            tagUnits[k] = new ArrayList<>();
         }
     }
 
@@ -14,28 +21,60 @@ class UnitManager {
         return units[0].size();
     }
 
+    public ArrayList<BoogUnit> getWorkers() {
+        return units[0];
+    }
+
     public int getNumRangers() {
         return units[2].size();
+    }
+
+    public ArrayList<BoogUnit> getRangers() {
+        return units[2];
     }
 
     public int getNumKnights() {
         return units[1].size();
     }
 
+    public ArrayList<BoogUnit> getKnights() {
+        return units[1];
+    }
+
     public int getNumMages() {
         return units[3].size();
+    }
+
+    public ArrayList<BoogUnit> getMages() {
+        return units[3];
     }
 
     public int getNumHealers() {
         return units[4].size();
     }
 
+    public ArrayList<BoogUnit> getHealers() {
+        return units[4];
+    }
+
     public int getNumRockets() {
         return units[5].size();
     }
 
+    public ArrayList<BoogUnit> getRockets() {
+        return units[5];
+    }
+
     public int getNumFactories() {
         return units[6].size();
+    }
+
+    public ArrayList<BoogUnit> getFactories() {
+        return units[6];
+    }
+
+    public ArrayList<BoogUnit> getTagWorkers(char tag) {
+        return tagUnits.get(tag);
     }
 
     public void add(BoogUnit unit) {
@@ -65,6 +104,20 @@ class UnitManager {
                 }
             }
         }
+    }
+
+    public void changeTag(BoogUnit unit, char tag) {
+        if (unit.getTag() == '0') {
+            if (tagUnits.containsKey(tag)) {
+                tagUnits.replace(tag, tagUnits.get(char).add(unit));
+            }
+        } else {
+            if (tagUnits.containsKey(tag)) {
+                tagUnits.replace(tag, tagUnits.get(char).add(unit));
+                tagUnits.replace(unit.getTag(), tagUnits.get(unit.getTag().remove(unit)));
+            }
+        }
+        unit.setTag(tag);
     }
 
     public void printList() {
