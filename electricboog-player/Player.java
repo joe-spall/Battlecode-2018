@@ -3,8 +3,27 @@
 import bc.*;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.ArrayList;
 
 public class Player {
+
+    private final static char ROCKET_WORKER = 'a';
+    private final static char FACTORY_WORKER = 'b';
+    private final static char EARTH_FARM_WORKER = 'c';
+    private final static char MARS_FARM_WORKER = 'd';
+    private final static char EARTH_DEFENSE_KNIGHT = 'e';
+    private final static char MARS_DEFENSE_KNIGHT = 'f';
+    private final static char EARTH_ATTACK_KNIGHT = 'g';
+    private final static char MARS_ATTACK_KNIGHT = 'h';
+    private final static char EARTH_MAGE = 'i';
+    private final static char MARS_MAGE = 'j';
+    private final static char EARTH_SCOUT_RANGER = 'k';
+    private final static char MARS_SCOUT_RANGER = 'l';
+    private final static char SNIPER_RANGER = 'm';
+    private final static char EARTH_HEALER = 'n';
+    private final static char MARS_HEALER = 'o';
+
+
     public static void main(String[] args) {
         // You can use other files in this directory, and in subdirectories.
         Extra extra = new Extra(27);
@@ -33,6 +52,44 @@ public class Player {
         Direction[] directions = Direction.values();
         HashMap<Integer, Direction> unitDirections = new HashMap();
         gc.queueResearch(UnitType.Rocket);
+
+        UnitManager unitManager = new UnitManager();
+
+        VecUnit initialUnits = gc.myUnits();
+        for (int i = 0; i < initialUnits.size(); i++) {
+
+            Unit unit = initialUnits.get(i);
+            BoogUnit boogUnit = new BoogUnit(unit);
+            unitManager.add(boogUnit);
+        }
+        unitManager.printList();
+
+        while (true) {
+            System.out.println("Current round: "+gc.round());
+            System.out.println("Current Karb: "+gc.karbonite());
+            unitManager.printList();
+            // VecUnit is a class that you can think of as similar to ArrayList<Unit>, but immutable.
+            ArrayList<BoogUnit>[] units = unitManager.getUnits();
+            ArrayList<BoogUnit> deadList = new ArrayList();
+            for (int k = 0; k < 7; k++) {
+                for (int j = 0; j < units[k].size(); j++) {
+                    BoogUnit unit = units[k].get(j);
+                    if (unit.getUnit().health() == 0 && unit.getUnit().location().isInGarrison() == false) {
+                        deadList.add(unit);
+                        continue;
+                    }
+                    unit.vision();
+                    unit.adjustTag();
+                    unit.move();
+                    unit.attack();
+                }
+            }
+            for (BoogUnit dead : deadList) {
+                unitManager.remove(dead);
+            }
+            /*for (int i = 0; i < units.size(); i++) {
+
+
         while (true) {
             System.out.println("Current round: "+gc.round());
             System.out.println("Current Karb: "+gc.karbonite());
@@ -40,12 +97,14 @@ public class Player {
             VecUnit units = gc.myUnits();
 
             for (int i = 0; i < units.size(); i++) {
+
                 Unit unit = units.get(i);
                 int id = unit.id();
                 if (unit.unitType().equals(UnitType.Worker)) {
 
 
                     boolean harvested = false;
+
 
                     if (!unit.location().isInGarrison()) {
                         VecUnit nearbyRockets = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
@@ -81,11 +140,13 @@ public class Player {
 
 
                     for (Direction direction: directions) {
+
                         if (gc.canBlueprint(id, UnitType.Factory, direction)) {
                             gc.blueprint(id, UnitType.Factory, direction);
                             break;
                         }
                     }
+
                     if(gc.canHarvest(id,Direction.North)){
                         gc.canHarvest(id,Direction.North);
                         System.out.println("Harvested N");
@@ -139,6 +200,7 @@ public class Player {
 
                     }
                 } else if (unit.unitType().equals(UnitType.Factory)) {
+
                     //if it can produce a worker, it does
                     if (gc.canProduceRobot(id, UnitType.Worker) && units.size() < 10) {
                         gc.produceRobot(id, UnitType.Worker);
@@ -146,6 +208,7 @@ public class Player {
                     }
                     //if it can produce a mage, it does
                     if (gc.canProduceRobot(id, UnitType.Mage) && units.size() < 15 && false) {
+
                         gc.produceRobot(id, UnitType.Mage);
                         System.out.println("Mage Created");
                     }
@@ -155,6 +218,12 @@ public class Player {
                         if (gc.canUnload(id, direction)) {
                             System.out.println("Unloaded");
                             gc.unload(id, direction);
+
+                            MapLocation factoryLocation = unit.location().mapLocation();
+                            MapLocation nextLocation = factoryLocation.add(direction);
+                            Unit newUnit = gc.senseUnitAtLocation(nextLocation);
+                            BoogUnit boog = new BoogUnit(newUnit);
+                            unitManager.add(boog);
 
                             break;
                         }
@@ -235,6 +304,10 @@ public class Player {
 
 
             }
+
+            unitManager.update();
+            */
+
             // Submit the actions we've done, and wait for our next turn.
             gc.nextTurn();
         }
