@@ -43,5 +43,5 @@ abstract class BoogUnit {
 
     public abstract void move();
 
-    public abstract void attack();
+    public abstract void action();
 }
