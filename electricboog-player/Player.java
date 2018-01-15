@@ -23,6 +23,7 @@ public class Player {
     private final static char EARTH_HEALER = 'n';
     private final static char MARS_HEALER = 'o';
 
+
     public static void main(String[] args) {
         // You can use other files in this directory, and in subdirectories.
         Extra extra = new Extra(27);
@@ -51,6 +52,7 @@ public class Player {
         Direction[] directions = Direction.values();
         HashMap<Integer, Direction> unitDirections = new HashMap();
         gc.queueResearch(UnitType.Rocket);
+
         UnitManager unitManager = new UnitManager();
 
         VecUnit initialUnits = gc.myUnits();
@@ -87,6 +89,15 @@ public class Player {
             }
             /*for (int i = 0; i < units.size(); i++) {
 
+
+        while (true) {
+            System.out.println("Current round: "+gc.round());
+            System.out.println("Current Karb: "+gc.karbonite());
+            // VecUnit is a class that you can think of as similar to ArrayList<Unit>, but immutable.
+            VecUnit units = gc.myUnits();
+
+            for (int i = 0; i < units.size(); i++) {
+
                 Unit unit = units.get(i);
                 int id = unit.id();
                 if (unit.unitType().equals(UnitType.Worker)) {
@@ -95,55 +106,47 @@ public class Player {
                     boolean harvested = false;
 
 
-                    VecUnit nearbyRockets = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
-                    for (int k = 0; k < nearbyRockets.size(); k++) {
-                        Unit rocket = nearbyRockets.get(k);
-                        if (gc.canBuild(id, rocket.id())) {
-                            gc.build(id, rocket.id());
-                        }
-                    }
-
-                    VecUnit nearbyUnits = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Factory);
-                    for (int k = 0; k < nearbyUnits.size(); k++) {
-                        Unit factory = nearbyUnits.get(k);
-                        if (gc.canBuild(id, factory.id())) {
-                            gc.build(id, factory.id());
-                        }
-                    }
-
-                    //if over 150 karbonite, build a factory
-                    if (gc.karbonite() > 150) {
-                        for (Direction direction: directions) {
-                            if (gc.canBlueprint(id, UnitType.Rocket, direction) && nearbyRockets.size() != 0) {
-                                gc.blueprint(id, UnitType.Rocket, direction);
-                                MapLocation workerLocation = unit.location().mapLocation();
-                                MapLocation rocketLocation = workerLocation.add(direction);
-                                Unit newUnit = gc.senseUnitAtLocation(rocketLocation);
-                                BoogUnit boog = new BoogUnit(newUnit);
-                                unitManager.add(boog);
-                                unitManager.printList();
-                                break;
+                    if (!unit.location().isInGarrison()) {
+                        VecUnit nearbyRockets = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
+                        for (int k = 0; k < nearbyRockets.size(); k++) {
+                            Unit rocket = nearbyRockets.get(k);
+                            if (gc.canBuild(id, rocket.id())) {
+                                gc.build(id, rocket.id());
                             }
-                            if (gc.canBlueprint(id, UnitType.Factory, direction) && nearbyUnits.size() != 0) {
-                                gc.blueprint(id, UnitType.Factory, direction);
-                                MapLocation workerLocation = unit.location().mapLocation();
-                                MapLocation factoryLocation = workerLocation.add(direction);
-                                Unit newUnit = gc.senseUnitAtLocation(factoryLocation);
-                                BoogUnit boog = new BoogUnit(newUnit);
-                                unitManager.add(boog);
-                                unitManager.printList();
-                                break;
+                        }
+
+                        VecUnit nearbyUnits = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Factory);
+                        for (int k = 0; k < nearbyUnits.size(); k++) {
+                            Unit factory = nearbyUnits.get(k);
+                            if (gc.canBuild(id, factory.id())) {
+                                gc.build(id, factory.id());
+                            }
+                        }
+
+                        //if over 150 karbonite, build a factory
+                        if (gc.karbonite() > 150) {
+                            for (Direction direction: directions) {
+                                if (gc.canBlueprint(id, UnitType.Rocket, direction) && nearbyRockets.size() == 0) {
+                                    gc.blueprint(id, UnitType.Rocket, direction);
+                                    break;
+                                }
+                                if (gc.canBlueprint(id, UnitType.Factory, direction) && nearbyUnits.size() < 2) {
+                                    gc.blueprint(id, UnitType.Factory, direction);
+                                    break;
+                                }
                             }
                         }
                     }
 
 
                     for (Direction direction: directions) {
-                            if (gc.canBlueprint(id, UnitType.Factory, direction)) {
-                                gc.blueprint(id, UnitType.Factory, direction);
-                                break;
-                            }
+
+                        if (gc.canBlueprint(id, UnitType.Factory, direction)) {
+                            gc.blueprint(id, UnitType.Factory, direction);
+                            break;
                         }
+                    }
+
                     if(gc.canHarvest(id,Direction.North)){
                         gc.canHarvest(id,Direction.North);
                         System.out.println("Harvested N");
@@ -197,8 +200,15 @@ public class Player {
 
                     }
                 } else if (unit.unitType().equals(UnitType.Factory)) {
+
+                    //if it can produce a worker, it does
+                    if (gc.canProduceRobot(id, UnitType.Worker) && units.size() < 10) {
+                        gc.produceRobot(id, UnitType.Worker);
+                        System.out.println("Worker Created");
+                    }
                     //if it can produce a mage, it does
-                    if (gc.canProduceRobot(id, UnitType.Mage) && units.size() < 15) {
+                    if (gc.canProduceRobot(id, UnitType.Mage) && units.size() < 15 && false) {
+
                         gc.produceRobot(id, UnitType.Mage);
                         System.out.println("Mage Created");
                     }
@@ -208,11 +218,13 @@ public class Player {
                         if (gc.canUnload(id, direction)) {
                             System.out.println("Unloaded");
                             gc.unload(id, direction);
+
                             MapLocation factoryLocation = unit.location().mapLocation();
                             MapLocation nextLocation = factoryLocation.add(direction);
                             Unit newUnit = gc.senseUnitAtLocation(nextLocation);
                             BoogUnit boog = new BoogUnit(newUnit);
                             unitManager.add(boog);
+
                             break;
                         }
                     }
@@ -292,8 +304,10 @@ public class Player {
 
 
             }
+
             unitManager.update();
             */
+
             // Submit the actions we've done, and wait for our next turn.
             gc.nextTurn();
         }
