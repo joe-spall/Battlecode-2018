@@ -59,7 +59,7 @@ public class Player {
         for (int i = 0; i < initialUnits.size(); i++) {
 
             Unit unit = initialUnits.get(i);
-            BoogUnit boogUnit = new BoogUnit(unit);
+            BoogUnit boogUnit = new WorkerUnit(unit);
             unitManager.add(boogUnit);
         }
         unitManager.printList();
@@ -81,7 +81,7 @@ public class Player {
                     unit.vision();
                     unit.adjustTag();
                     unit.move();
-                    unit.attack();
+                    unit.action();
                 }
             }
             for (BoogUnit dead : deadList) {
