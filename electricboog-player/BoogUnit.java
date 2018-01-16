@@ -2,29 +2,29 @@ import bc.*;
 
 abstract class BoogUnit {
     private Unit unit;
-    private char movementTag;
-    private char statusTag;
+    private char tag;
+    private char status;
     BoogUnit(Unit unit) {
         this.unit = unit;
-        movementTag = '0';
-        statusTag = '0';
+        tag = '0';
+        status = '0';
     }
 
-    public void setMovementTag(char tagName) {
+    public void setTag(char tagName) {
 
-        movementTag = tagName;
+        tag = tagName;
     }
 
-    public char getMovementTag() {
-        return movementTag;
+    public char getTag() {
+        return tag;
     }
 
-    public void setStatusTag(char tagName) {
-        statusTag = tagName;
+    public void setStatus(char statusName) {
+        status = statusName;
     }
 
-    public char getStatusTag() {
-        return statusTag;
+    public char getStatus() {
+        return status;
     }
 
     public Unit getUnit() {
