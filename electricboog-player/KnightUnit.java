@@ -1,8 +1,9 @@
 import bc.*;
+
 public class KnightUnit extends BoogUnit {
 
-    public KnightUnit(Unit unit) {
-        super(unit);
+    public KnightUnit(Unit unit, GameController gc, Grid grid) {
+        super(unit, gc, grid);
     }
 
     /*

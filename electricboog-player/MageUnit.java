@@ -2,8 +2,8 @@ import bc.*;
 
 public class MageUnit extends BoogUnit {
 
-    public MageUnit(Unit unit) {
-        super(unit);
+    public MageUnit(Unit unit, GameController gc, Grid grid) {
+        super(unit, gc, grid);
     }
 
     /*

@@ -1,11 +1,12 @@
-import bc.*
+import bc.*;
 
 public class Tile {
     private MapLocation mapLocation;
     private long karbonite;
-    private UnitType unit;
+    private UnitType unitType;
     private boolean isEnemy;
     private boolean isPassable;
+    private Unit unit;
 
     public Tile(MapLocation location, PlanetMap map) {
         mapLocation = location;
@@ -35,8 +36,13 @@ public class Tile {
         return unit;
     }
 
-    public void setUnit(UnitType unit) {
+    public UnitType getUnitType() {
+        return unitType;
+    }
+
+    public void setUnit(Unit unit) {
         this.unit = unit;
+        unitType = unit.unitType();
     }
 
     public boolean isEnemy() {
