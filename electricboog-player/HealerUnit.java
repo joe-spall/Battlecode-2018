@@ -1,8 +1,9 @@
 import bc.*;
+
 public class HealerUnit extends BoogUnit {
 
-    public HealerUnit(Unit unit) {
-        super(unit);
+    public HealerUnit(Unit unit, GameController gc, Grid grid) {
+        super(unit, gc, grid);
     }
 
     /*

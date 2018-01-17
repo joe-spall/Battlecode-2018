@@ -1,8 +1,9 @@
 import bc.*;
+
 public class WorkerUnit extends BoogUnit {
 
-    public WorkerUnit(Unit unit) {
-        super(unit);
+    public WorkerUnit(Unit unit, GameController gc, Grid grid) {
+        super(unit, gc, grid);
     }
 
     /*

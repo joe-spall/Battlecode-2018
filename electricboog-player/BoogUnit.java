@@ -2,29 +2,34 @@ import bc.*;
 
 abstract class BoogUnit {
     private Unit unit;
-    private char tag;
-    private char status;
-    BoogUnit(Unit unit) {
+    private char movementTag;
+    private char statusTag;
+    private Grid grid;
+    private GameController gc;
+
+    BoogUnit(Unit unit, GameController gc, Grid grid) {
         this.unit = unit;
-        tag = '0';
-        status = '0';
+        movementTag = '0';
+        statusTag = '0';
+        this.gc = gc;
+        this.grid = grid;
     }
 
-    public void setTag(char tagName) {
+    public void setMovementTag(char tagName) {
 
-        tag = tagName;
+        movementTag = tagName;
     }
 
-    public char getTag() {
-        return tag;
+    public char getMovementTag() {
+        return movementTag;
     }
 
-    public void setStatus(char statusName) {
-        status = statusName;
+    public void setStatusTag(char tagName) {
+        statusTag = tagName;
     }
 
-    public char getStatus() {
-        return status;
+    public char getStatusTag() {
+        return statusTag;
     }
 
     public Unit getUnit() {
@@ -36,7 +41,25 @@ abstract class BoogUnit {
         BoogUnits that updates the grid based on its current vision
     */
     public void vision() {
+        VecMapLocation locations = gc.allLocationsWithin(unit.location().mapLocation(), unit.visionRange());
+        for (int k = 0; k < locations.size(); k++) {
+            MapLocation location = locations.get(k);
+            long karbonite = gc.karboniteAt(location);
+            Tile tile = grid.getTileAt(location.getX(), location.getY());
+            tile.setKarbonite(karbonite);
+            if (gc.hasUnitAtLocation(location)) {
+                Unit unitAtLocation = gc.senseUnitAtLocation(location);
+                tile.setUnit(unitAtLocation);
+                if (unitAtLocation != null) {
+                    tile.setIsEnemy(!unit.team().equals(unitAtLocation.team()));
+                } else {
+                    tile.setIsEnemy(false);
+                }
+            }
 
+
+
+        }
     }
 
     public abstract void adjustTag();
