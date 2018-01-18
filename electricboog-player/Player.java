@@ -23,6 +23,7 @@ public class Player {
     private final static char EARTH_HEALER = 'n';
     private final static char MARS_HEALER = 'o';
 
+    private final static char EARTH_RESEARCH = 'b';
     private final static char MARS_RESEARCH = 'b';
     private final static char OFFENSIVE_RESEARCH = 'a';
     private final static char DEFENSIVE_RESEARCH = 'b';
