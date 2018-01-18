@@ -25,7 +25,7 @@ class ResearchManager {
     public void checkCurrentQueue() {
         ResearchInfo resInfo = gameController.researchInfo();
         if (resInfo.roundsLeft() == 1 || !resInfo.hasNextInQueue()) {
-            setQueueForTags(gameController);
+            setQueueForTags();
             System.out.println("Finished research, changing queue");
         }
     }
