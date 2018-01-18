@@ -127,8 +127,8 @@ class UnitManager {
         }
     }
 
-    public void changeMovementTag(BoogUnit unit, char tag) {
-        if (unit.getMovementTag() == '0') {
+    public void changeTag(BoogUnit unit, char tag) {
+        if (unit.getTag() == '0') {
             if (tagUnits.containsKey(tag)) {
                 tagUnits.get(tag).add(unit);
             } else {
@@ -140,14 +140,14 @@ class UnitManager {
             if (tagUnits.containsKey(tag)) {
 
                 tagUnits.get(tag).add(unit);
-                tagUnits.get(unit.getMovementTag()).remove(unit);
+                tagUnits.get(unit.getTag()).remove(unit);
             }
         }
-        unit.setMovementTag(tag);
+        unit.setTag(tag);
     }
 
-    public void changeStatusTag(BoogUnit unit, char tag) {
-        if (unit.getStatusTag() == '0') {
+    public void changeStatus(BoogUnit unit, char tag) {
+        if (unit.getStatus() == '0') {
             if (tagUnits.containsKey(tag)) {
                 tagUnits.get(tag).add(unit);
             } else {
@@ -159,10 +159,10 @@ class UnitManager {
             if (tagUnits.containsKey(tag)) {
 
                 tagUnits.get(tag).add(unit);
-                tagUnits.get(unit.getStatusTag()).remove(unit);
+                tagUnits.get(unit.getStatus()).remove(unit);
             }
         }
-        unit.setStatusTag(tag);
+        unit.setStatus(tag);
     }
 
     public void printList() {

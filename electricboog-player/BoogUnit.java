@@ -2,34 +2,45 @@ import bc.*;
 
 abstract class BoogUnit {
     private Unit unit;
-    private char movementTag;
-    private char statusTag;
+    private char tag;
+    private char status;
     private Grid grid;
     private GameController gc;
+    private Team enemy;
 
     BoogUnit(Unit unit, GameController gc, Grid grid) {
         this.unit = unit;
-        movementTag = '0';
-        statusTag = '0';
+        tag = '0';
+        status = '0';
         this.gc = gc;
         this.grid = grid;
+        enemy = null;
+        if (gc.team().equals(Team.Blue)) {
+            enemy = Team.Red;
+        } else {
+            enemy = Team.Blue;
+        }
     }
 
-    public void setMovementTag(char tagName) {
+    public void setTag(char tagName) {
 
-        movementTag = tagName;
+        tag = tagName;
     }
 
-    public char getMovementTag() {
-        return movementTag;
+    public Team getEnemy() {
+        return enemy;
     }
 
-    public void setStatusTag(char tagName) {
-        statusTag = tagName;
+    public char getTag() {
+        return tag;
     }
 
-    public char getStatusTag() {
-        return statusTag;
+    public void setStatus(char tagName) {
+        status = tagName;
+    }
+
+    public char getStatus() {
+        return status;
     }
 
     public Unit getUnit() {
@@ -44,16 +55,18 @@ abstract class BoogUnit {
         VecMapLocation locations = gc.allLocationsWithin(unit.location().mapLocation(), unit.visionRange());
         for (int k = 0; k < locations.size(); k++) {
             MapLocation location = locations.get(k);
-            long karbonite = gc.karboniteAt(location);
-            Tile tile = grid.getTileAt(location.getX(), location.getY());
-            tile.setKarbonite(karbonite);
-            if (gc.hasUnitAtLocation(location)) {
-                Unit unitAtLocation = gc.senseUnitAtLocation(location);
-                tile.setUnit(unitAtLocation);
-                if (unitAtLocation != null) {
-                    tile.setIsEnemy(!unit.team().equals(unitAtLocation.team()));
-                } else {
-                    tile.setIsEnemy(false);
+            if (gc.canSenseLocation(location)) {
+                long karbonite = gc.karboniteAt(location);
+                Tile tile = grid.getTileAt(location.getX(), location.getY());
+                tile.setKarbonite(karbonite);
+                if (gc.hasUnitAtLocation(location)) {
+                    Unit unitAtLocation = gc.senseUnitAtLocation(location);
+                    tile.setUnit(unitAtLocation);
+                    if (unitAtLocation != null) {
+                        tile.setIsEnemy(!unit.team().equals(unitAtLocation.team()));
+                    } else {
+                        tile.setIsEnemy(false);
+                    }
                 }
             }
 
@@ -62,9 +75,9 @@ abstract class BoogUnit {
         }
     }
 
-    public abstract void adjustTag();
+    public abstract void adjustTag(UnitManager unitManager);
 
     public abstract void move();
 
-    public abstract void action();
+    public abstract void action(UnitManager unitManager);
 }

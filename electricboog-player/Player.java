@@ -60,6 +60,7 @@ public class Player {
             Unit unit = initialUnits.get(i);
             BoogUnit boogUnit = new WorkerUnit(unit, gc, grid);
             unitManager.add(boogUnit);
+            unitManager.changeTag(boogUnit, FACTORY_WORKER);
         }
         unitManager.printList();
 
@@ -79,10 +80,11 @@ public class Player {
                         deadList.add(unit);
                         continue;
                     }
+
                     unit.vision();
-                    unit.adjustTag();
+                    unit.adjustTag(unitManager);
                     unit.move();
-                    unit.action();
+                    unit.action(unitManager);
                 }
             }
             for (BoogUnit dead : deadList) {
