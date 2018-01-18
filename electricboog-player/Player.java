@@ -93,7 +93,7 @@ public class Player {
 
             //*** Research Manager Handling
 
-            researchManager.checkCurrentQueue(gc);
+            researchManager.checkCurrentQueue();
 
             //***
 

@@ -9,7 +9,7 @@ class ResearchManager {
     private final static char DEFENSIVE_RESEARCH = 'b';
     private final static char ROCKET_RESEARCH = 'c';
     private ArrayList<UnitType> finishedUnits;
-    private GameController gc;
+    private GameController gameController;
 
     private char locationTag;
     private char objectiveTag;
@@ -96,8 +96,8 @@ class ResearchManager {
         // TODO Calculate tag strategy
         locationTag = newLocationTag;
         objectiveTag = newObjectiveTag;
-        reset(gameController);
-        setQueueForTags(gameController);
+        reset();
+        setQueueForTags();
     }
 
     public void reset() {
