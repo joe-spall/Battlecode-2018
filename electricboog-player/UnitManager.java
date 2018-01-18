@@ -141,6 +141,11 @@ class UnitManager {
 
                 tagUnits.get(tag).add(unit);
                 tagUnits.get(unit.getTag()).remove(unit);
+            } else {
+                ArrayList<BoogUnit> newArray = new ArrayList<BoogUnit>();
+                newArray.add(unit);
+                tagUnits.put(tag, newArray);
+                tagUnits.get(unit.getTag()).remove(unit);
             }
         }
         unit.setTag(tag);

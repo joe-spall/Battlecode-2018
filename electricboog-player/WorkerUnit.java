@@ -36,13 +36,23 @@ public class WorkerUnit extends BoogUnit {
                 }
             }
             if (!canBuild) {
-                if (gc.researchInfo().getLevel(UnitType.Rocket) >= 1 && unitManager.getTagWorkers(ROCKET_WORKER).size() <= 2 && gc.karbonite() > 100) {
+                if (gc.researchInfo().getLevel(UnitType.Rocket) >= 1 && (unitManager.getTagWorkers(ROCKET_WORKER) == null || unitManager.getTagWorkers(ROCKET_WORKER).size() <= 2) && gc.karbonite() > 100) {
                     unitManager.changeTag(this, ROCKET_WORKER);
                 }
                 unitManager.changeTag(this, EARTH_FARM_WORKER);
             }
-            if (unitManager.getTagWorkers(ROCKET_WORKER) != null && unitManager.getTagWorkers(ROCKET_WORKER).size() <= 2 && gc.round() > 500) {
+            if ((unitManager.getTagWorkers(ROCKET_WORKER) == null || unitManager.getTagWorkers(ROCKET_WORKER).size() <= 2) && gc.round() > 500) {
                 unitManager.changeTag(this, ROCKET_WORKER);
+            }
+        }
+
+        if (getTag() == ROCKET_WORKER) {
+            VecUnit nearbyUnits = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
+            for (int k = 0; k < nearbyUnits.size(); k++) {
+                Unit rocket = nearbyUnits.get(k);
+                if (rocket.health() == rocket.maxHealth()) {
+                    unitManager.changeTag(this, MARS_FARM_WORKER);
+                }
             }
         }
     }
@@ -52,9 +62,10 @@ public class WorkerUnit extends BoogUnit {
     */
     public void move() {
         int id = unit.id();
+        Direction[] allDirections = Direction.values();
         if (getTag() == FACTORY_WORKER) {
 
-            Direction[] allDirections = Direction.values();
+
             Direction[] directions = new Direction[4];
             directions[0] = Direction.Northwest;
             directions[1] = Direction.Northeast;
@@ -128,6 +139,30 @@ public class WorkerUnit extends BoogUnit {
 
 
             }
+        } else if (getTag() == ROCKET_WORKER) {
+            VecUnit nearbyUnits = gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), unit.visionRange(), getEnemy());
+
+            for (int k = 0; k < nearbyUnits.size(); k++) {
+                Unit enemy = nearbyUnits.get(k);
+                UnitType enemyType = enemy.unitType();
+                if (!enemyType.equals(UnitType.Worker) && !enemyType.equals(UnitType.Factory) && !enemyType.equals(UnitType.Rocket)) {
+                    if (enemy.attackRange() >= unit.location().mapLocation().distanceSquaredTo(enemy.location().mapLocation())) {
+                        Direction opposite = unit.location().mapLocation().directionTo(enemy.location().mapLocation());
+                        opposite = bc.bcDirectionOpposite(opposite);
+                        for (int j = 0; j < allDirections.length; j++) {
+                            if (opposite.equals(allDirections[j])) {
+                                if (gc.canMove(id, allDirections[j])) {
+                                    gc.moveRobot(id, allDirections[j]);
+                                } else if (gc.canMove(id, allDirections[j + 1])) {
+                                    gc.moveRobot(id, allDirections[j + 1]);
+                                } else if (gc.canMove(id, allDirections[j - 1])) {
+                                    gc.moveRobot(id, allDirections[j - 1]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -164,6 +199,39 @@ public class WorkerUnit extends BoogUnit {
                         unitManager.add(boog);
                         unitManager.printList();
                         break;
+                    }
+                }
+            }
+        } else if (getTag() == ROCKET_WORKER) {
+            VecUnit nearbyRocket = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
+            for (int k = 0; k < nearbyRocket.size(); k++) {
+                Unit rocket = nearbyRocket.get(k);
+                if (gc.canRepair(id, rocket.id())) {
+                    gc.repair(id, rocket.id());
+                }
+            }
+            VecUnit nearbyUnits = gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), unit.visionRange(), getEnemy());
+            for (int k = 0; k < nearbyUnits.size(); k++) {
+                Unit enemy = nearbyUnits.get(k);
+                boolean canBuild = true;
+                UnitType enemyType = enemy.unitType();
+                if (!enemyType.equals(UnitType.Worker) && !enemyType.equals(UnitType.Factory) && !enemyType.equals(UnitType.Rocket)) {
+                    if (enemy.attackRange() >= unit.location().mapLocation().distanceSquaredTo(enemy.location().mapLocation())) {
+                        canBuild = false;
+                    }
+                }
+                if (canBuild) {
+                    for (Direction direction: directions) {
+                        if (gc.canBlueprint(id, UnitType.Rocket, direction) ) {
+                            gc.blueprint(id, UnitType.Rocket, direction);
+                            MapLocation workerLocation = unit.location().mapLocation();
+                            MapLocation rocketLocation = workerLocation.add(direction);
+                            Unit newUnit = gc.senseUnitAtLocation(rocketLocation);
+                            BoogUnit boog = new RocketUnit(newUnit, gc, grid);
+                            unitManager.add(boog);
+                            unitManager.printList();
+                            break;
+                        }
                     }
                 }
             }
