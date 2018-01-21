@@ -20,13 +20,14 @@ class ResearchManager {
         objectiveTag = _objectiveTag;
         this.gameController = gameController;
         this.gameController.queueResearch(UnitType.Worker);
+        System.out.println("Research: Initalized");
     }
 
     public void checkCurrentQueue() {
         ResearchInfo resInfo = gameController.researchInfo();
-        if (resInfo.roundsLeft() == 1 || !resInfo.hasNextInQueue()) {
+        if (!resInfo.hasNextInQueue()) {
+        	System.out.println("Research: Finished");
             setQueueForTags();
-            System.out.println("Finished research, changing queue");
         }
     }
 
@@ -34,58 +35,63 @@ class ResearchManager {
         ResearchInfo resInfo = gameController.researchInfo();
         if(objectiveTag == ROCKET_RESEARCH && resInfo.getLevel(UnitType.Rocket) < 3){
             gameController.queueResearch(UnitType.Rocket);
+            System.out.println("Research: Starting, Type: Rocket, Level: " + resInfo.getLevel(UnitType.Rocket));
             return; 
         }
 
     	if (locationTag == EARTH_RESEARCH) {
             if (objectiveTag == OFFENSIVE_RESEARCH) {
                 // TODO Set priority of units
-                ArrayList<UnitType> offensiveUnits = new ArrayList<UnitType>();
-                offensiveUnits.add(UnitType.Knight);
-                offensiveUnits.add(UnitType.Ranger);
-                offensiveUnits.add(UnitType.Healer);
-                int minIndx = findMinIdxUnits(resInfo, offensiveUnits);
-                if(resInfo.getLevel(offensiveUnits.get(minIndx)) == 3){
+                ArrayList<UnitType> offensiveEarthUnits = new ArrayList<UnitType>();
+                offensiveEarthUnits.add(UnitType.Knight);
+                offensiveEarthUnits.add(UnitType.Ranger);
+                offensiveEarthUnits.add(UnitType.Healer);
+                int minIndx = findMinIdxUnits(resInfo, offensiveEarthUnits);
+                if(resInfo.getLevel(offensiveEarthUnits.get(minIndx)) == 3){
                     // TODO Add second tier
                 }
-                gameController.queueResearch(offensiveUnits.get(minIndx));
+                gameController.queueResearch(offensiveEarthUnits.get(minIndx));
+                System.out.println("Research: Starting, Type: Offensive Earth, Unit: " + offensiveEarthUnits.get(minIndx) + ", Level: " + resInfo.getLevel(offensiveEarthUnits.get(minIndx)));
                 
             } else if (objectiveTag == DEFENSIVE_RESEARCH) {
-                ArrayList<UnitType> offensiveUnits = new ArrayList<UnitType>();
-                offensiveUnits.add(UnitType.Knight);
-                offensiveUnits.add(UnitType.Ranger);
-                offensiveUnits.add(UnitType.Healer);
-                int minIndx = findMinIdxUnits(resInfo, offensiveUnits);
-                if(resInfo.getLevel(offensiveUnits.get(minIndx)) == 3){
+            	// TODO Set priority of units
+                ArrayList<UnitType> defensiveEarthUnits = new ArrayList<UnitType>();
+                defensiveEarthUnits.add(UnitType.Knight);
+                defensiveEarthUnits.add(UnitType.Ranger);
+                defensiveEarthUnits.add(UnitType.Healer);
+                int minIndx = findMinIdxUnits(resInfo, defensiveEarthUnits);
+                if(resInfo.getLevel(defensiveEarthUnits.get(minIndx)) == 3){
                     // TODO Add second tier
                 }
-                gameController.queueResearch(offensiveUnits.get(minIndx));
-
+                gameController.queueResearch(defensiveEarthUnits.get(minIndx));
+                System.out.println("Research: Starting, Type: Defensive Earth, Unit: " + defensiveEarthUnits.get(minIndx) + ", Level: " + resInfo.getLevel(defensiveEarthUnits.get(minIndx)));
             }
         } else if (locationTag == MARS_RESEARCH) {
             if (objectiveTag == OFFENSIVE_RESEARCH) {
                 // TODO Set priority of units
-                ArrayList<UnitType> offensiveUnits = new ArrayList<UnitType>();
-                offensiveUnits.add(UnitType.Knight);
-                offensiveUnits.add(UnitType.Ranger);
-                offensiveUnits.add(UnitType.Healer);
-                int minIndx = findMinIdxUnits(resInfo, offensiveUnits);
-                if(resInfo.getLevel(offensiveUnits.get(minIndx)) == 3){
+                ArrayList<UnitType> offensiveMarsUnits = new ArrayList<UnitType>();
+                offensiveMarsUnits.add(UnitType.Knight);
+                offensiveMarsUnits.add(UnitType.Ranger);
+                offensiveMarsUnits.add(UnitType.Healer);
+                int minIndx = findMinIdxUnits(resInfo, offensiveMarsUnits);
+                if(resInfo.getLevel(offensiveMarsUnits.get(minIndx)) == 3){
                     // TODO Add second tier
                 }
-                gameController.queueResearch(offensiveUnits.get(minIndx));
-
+                gameController.queueResearch(offensiveMarsUnits.get(minIndx));
+                System.out.println("Research: Starting, Type: Offensive Mars, Unit: " + offensiveMarsUnits.get(minIndx) + ", Level: " + resInfo.getLevel(offensiveMarsUnits.get(minIndx)));
             } else if (objectiveTag == DEFENSIVE_RESEARCH) {
                 // TODO Set priority of units
-                ArrayList<UnitType> offensiveUnits = new ArrayList<UnitType>();
-                offensiveUnits.add(UnitType.Knight);
-                offensiveUnits.add(UnitType.Ranger);
-                offensiveUnits.add(UnitType.Healer);
-                int minIndx = findMinIdxUnits(resInfo, offensiveUnits);
-                if(resInfo.getLevel(offensiveUnits.get(minIndx)) == 3){
+                ArrayList<UnitType> defensiveMarsUnits = new ArrayList<UnitType>();
+                defensiveMarsUnits.add(UnitType.Knight);
+                defensiveMarsUnits.add(UnitType.Ranger);
+                defensiveMarsUnits.add(UnitType.Healer);
+                int minIndx = findMinIdxUnits(resInfo, defensiveMarsUnits);
+                if(resInfo.getLevel(defensiveMarsUnits.get(minIndx)) == 3){
                     // TODO Add second tier
                 }
-                gameController.queueResearch(offensiveUnits.get(minIndx));
+                gameController.queueResearch(defensiveMarsUnits.get(minIndx));
+               	System.out.println("Research: Starting, Type: Defensive Mars, Unit: " + defensiveMarsUnits.get(minIndx) + ",Level: " + resInfo.getLevel(defensiveMarsUnits.get(minIndx)));
+
             }
 
         }

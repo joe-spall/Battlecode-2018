@@ -166,7 +166,7 @@ class UnitManager {
     }
 
     public void printList() {
-        System.out.println("[");
+        System.out.print("[");
         for (ArrayList<BoogUnit> unitArray : units) {
             System.out.print("New Unit: ");
             for (BoogUnit unit : unitArray) {
@@ -174,5 +174,6 @@ class UnitManager {
             }
             System.out.print(".");
         }
+        System.out.println("]");
     }
 }
