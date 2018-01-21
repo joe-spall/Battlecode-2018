@@ -3,20 +3,14 @@ import java.util.ArrayList;
 class ResearchManager {
 
 
-    private final static char EARTH_RESEARCH = 'a';
-    private final static char MARS_RESEARCH = 'b';
     private final static char OFFENSIVE_RESEARCH = 'a';
     private final static char DEFENSIVE_RESEARCH = 'b';
     private final static char ROCKET_RESEARCH = 'c';
     private final static char WORKER_RESEARCH = 'd';
-    private ArrayList<UnitType> offensiveEarthUnits;
-    private ArrayList<UnitType> defensiveEarthUnits;
-    private ArrayList<UnitType> offensiveMarsUnits;
-    private ArrayList<UnitType> defensiveMarsUnits;
+    private ArrayList<UnitType> offensiveUnits;
+    private ArrayList<UnitType> defensiveUnits;
 
     private GameController gameController;
-
-    private char locationTag;
     private char objectiveTag;
 
     /*
@@ -25,27 +19,16 @@ class ResearchManager {
 
     ResearchManager(GameController gameController, char _objectiveTag) {
         // TODO Set priority of units
-        offensiveEarthUnits = new ArrayList<UnitType>();
-        offensiveEarthUnits.add(UnitType.Knight);
-        offensiveEarthUnits.add(UnitType.Ranger);
-        offensiveEarthUnits.add(UnitType.Healer);
+        offensiveUnits = new ArrayList<UnitType>();
+        offensiveUnits.add(UnitType.Ranger);
+        offensiveUnits.add(UnitType.Healer);
+        offensiveUnits.add(UnitType.Knight);
 
-        defensiveEarthUnits = new ArrayList<UnitType>();
-        defensiveEarthUnits.add(UnitType.Knight);
-        defensiveEarthUnits.add(UnitType.Ranger);
-        defensiveEarthUnits.add(UnitType.Healer);
+        defensiveUnits = new ArrayList<UnitType>();
+        defensiveUnits.add(UnitType.Mage);
+        defensiveUnits.add(UnitType.Knight);
+        defensiveUnits.add(UnitType.Healer);
 
-        offensiveMarsUnits = new ArrayList<UnitType>();
-        offensiveMarsUnits.add(UnitType.Knight);
-        offensiveMarsUnits.add(UnitType.Ranger);
-        offensiveMarsUnits.add(UnitType.Healer);
-
-        defensiveMarsUnits = new ArrayList<UnitType>();
-        defensiveMarsUnits.add(UnitType.Knight);
-        defensiveMarsUnits.add(UnitType.Ranger);
-        defensiveMarsUnits.add(UnitType.Healer);
-
-        locationTag = EARTH_RESEARCH;
         objectiveTag = _objectiveTag;
         this.gameController = gameController;
         this.gameController.queueResearch(UnitType.Worker);
@@ -76,7 +59,7 @@ class ResearchManager {
         ResearchInfo resInfo = gameController.researchInfo();
 
         /*
-            Works on Rocket. If completed, works on Worker. If completed, switches to Offensive Earth.
+            Works on Rocket. If completed, works on Worker. If completed, switches to Offensive.
         */
 
         if (objectiveTag == ROCKET_RESEARCH) {
@@ -86,11 +69,11 @@ class ResearchManager {
                 return;
             } else {
                  if (resInfo.getLevel(UnitType.Worker) < 3) {
-                    setCurrentTags(EARTH_RESEARCH, WORKER_RESEARCH);
+                    setCurrentTags(WORKER_RESEARCH);
                     return;
                  }
                  else {
-                    setCurrentTags(EARTH_RESEARCH, OFFENSIVE_RESEARCH);
+                    setCurrentTags(OFFENSIVE_RESEARCH);
                     return;
                  }
             }
@@ -102,71 +85,37 @@ class ResearchManager {
                 System.out.println("Research: Starting, Type: Worker, Level: " + resInfo.getLevel(UnitType.Worker));
                 return;
             } else {
-                setCurrentTags(EARTH_RESEARCH, DEFENSIVE_RESEARCH);
+                setCurrentTags(DEFENSIVE_RESEARCH);
                 return;
             }
-
-
         }
 
-    	if (locationTag == EARTH_RESEARCH) {
-            /*
-                If completed, works on Worker. If completed, works on Defensive Earth.
-            */
-            if (objectiveTag == OFFENSIVE_RESEARCH) {
+        if (objectiveTag == OFFENSIVE_RESEARCH) {
 
-                int minIndx = findMinIdxUnits(resInfo, offensiveEarthUnits);
-                if(resInfo.getLevel(offensiveEarthUnits.get(minIndx)) == 3){
-                    setCurrentTags(EARTH_RESEARCH, WORKER_RESEARCH);
-                    return;
-                }
-                gameController.queueResearch(offensiveEarthUnits.get(minIndx));
-                System.out.println("Research: Starting, Type: Offensive Earth, Unit: " + offensiveEarthUnits.get(minIndx) + ", Level: " + resInfo.getLevel(offensiveEarthUnits.get(minIndx)));
+            int minIndx = findMinIdxUnits(resInfo, offensiveUnits);
+            if(resInfo.getLevel(offensiveUnits.get(minIndx)) == 3){
+                setCurrentTags(WORKER_RESEARCH);
                 return;
+            }
+            gameController.queueResearch(offensiveUnits.get(minIndx));
+            System.out.println("Research: Starting, Type: Offensive, Unit: " + offensiveUnits.get(minIndx) + ", Level: " + resInfo.getLevel(offensiveUnits.get(minIndx)));
+            return;
 
-            } else if (objectiveTag == DEFENSIVE_RESEARCH) {
+        } else if (objectiveTag == DEFENSIVE_RESEARCH) {
                 
-                int minIndx = findMinIdxUnits(resInfo, defensiveEarthUnits);
-                if (resInfo.getLevel(defensiveEarthUnits.get(minIndx)) == 3) {
-                    setCurrentTags(EARTH_RESEARCH, WORKER_RESEARCH);
-                    return;
-                }
-                gameController.queueResearch(defensiveEarthUnits.get(minIndx));
-                System.out.println("Research: Starting, Type: Defensive Earth, Unit: " + defensiveEarthUnits.get(minIndx) + ", Level: " + resInfo.getLevel(defensiveEarthUnits.get(minIndx)));
+            int minIndx = findMinIdxUnits(resInfo, defensiveUnits);
+            if (resInfo.getLevel(defensiveUnits.get(minIndx)) == 3) {
+                setCurrentTags(WORKER_RESEARCH);
                 return;
-
             }
-        } else if (locationTag == MARS_RESEARCH) {
-            if (objectiveTag == OFFENSIVE_RESEARCH) {
-
-                int minIndx = findMinIdxUnits(resInfo, offensiveMarsUnits);
-                if(resInfo.getLevel(offensiveMarsUnits.get(minIndx)) == 3){
-                    setCurrentTags(EARTH_RESEARCH, WORKER_RESEARCH);
-                    return;
-                }
-                gameController.queueResearch(offensiveMarsUnits.get(minIndx));
-                System.out.println("Research: Starting, Type: Offensive Mars, Unit: " + offensiveMarsUnits.get(minIndx) + ", Level: " + resInfo.getLevel(offensiveMarsUnits.get(minIndx)));
-                return;
-            } else if (objectiveTag == DEFENSIVE_RESEARCH) {
-
-                int minIndx = findMinIdxUnits(resInfo, defensiveMarsUnits);
-                if(resInfo.getLevel(defensiveMarsUnits.get(minIndx)) == 3){
-                    setCurrentTags(EARTH_RESEARCH, WORKER_RESEARCH);
-                    return;
-                }
-                gameController.queueResearch(defensiveMarsUnits.get(minIndx));
-               	System.out.println("Research: Starting, Type: Defensive Mars, Unit: " + defensiveMarsUnits.get(minIndx) + ",Level: " + resInfo.getLevel(defensiveMarsUnits.get(minIndx)));
-                return;
-
-            }
-
+            gameController.queueResearch(defensiveUnits.get(minIndx));
+            System.out.println("Research: Starting, Type: Defensive, Unit: " + defensiveUnits.get(minIndx) + ", Level: " + resInfo.getLevel(defensiveUnits.get(minIndx)));
+            return;
         }
-
     }
 
-    public void setCurrentTags(char newLocationTag, char newObjectiveTag) {
+    public void setCurrentTags(char newObjectiveTag) {
         // TODO Calculate tag strategy
-        locationTag = newLocationTag;
         objectiveTag = newObjectiveTag;
 
         String currentType = "";
@@ -174,18 +123,10 @@ class ResearchManager {
             currentType = "Rocket";
         } else if (newObjectiveTag == WORKER_RESEARCH) { 
             currentType = "Worker";
-        } else if (newLocationTag == EARTH_RESEARCH) {
-            if (newObjectiveTag == OFFENSIVE_RESEARCH) {
-                currentType = "Earth Offensive";
-            } else if (newObjectiveTag == DEFENSIVE_RESEARCH) {
-                currentType = "Earth Defensive";
-            }
-        } else if (newLocationTag == MARS_RESEARCH) {
-            if (newObjectiveTag == OFFENSIVE_RESEARCH) {
-                currentType = "Mars Offensive";
-            } else if (newObjectiveTag == DEFENSIVE_RESEARCH) {
-                currentType = "Mars Defensive";
-            }
+        } else if (newObjectiveTag == OFFENSIVE_RESEARCH) {
+            currentType = "Offensive"; 
+        } else if (newObjectiveTag == DEFENSIVE_RESEARCH) {
+            currentType = "Defensive";
         } else {
             currentType = "WAT";
         }
