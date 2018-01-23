@@ -23,13 +23,13 @@ public class Player {
     private final static char EARTH_HEALER = 'n';
     private final static char MARS_HEALER = 'o';
 
+    private final static char EARTH_RESEARCH = 'b';
+    private final static char MARS_RESEARCH = 'b';
+    private final static char OFFENSIVE_RESEARCH = 'a';
+    private final static char DEFENSIVE_RESEARCH = 'b';
+    private final static char ROCKET_RESEARCH = 'c';
+
     public static void main(String[] args) {
-        // You can use other files in this directory, and in subdirectories.
-        Extra extra = new Extra(27);
-        System.out.println(extra.toString());
-
-
-
         // MapLocation is a data structure you'll use a lot.
         MapLocation loc = new MapLocation(Planet.Earth, 10, 20);
         System.out.println("loc: "+loc+", one step to the Northwest: "+loc.add(Direction.Northwest));
@@ -50,7 +50,6 @@ public class Player {
         // Direction is a normal java enum.
         Direction[] directions = Direction.values();
         HashMap<Integer, Direction> unitDirections = new HashMap();
-        gc.queueResearch(UnitType.Rocket);
         UnitManager unitManager = new UnitManager();
         Grid grid = new Grid(gc.startingMap(Planet.Earth));
 
@@ -62,14 +61,16 @@ public class Player {
             unitManager.add(boogUnit);
         }
         unitManager.printList();
+        ResearchManager researchManager = new ResearchManager(gc,OFFENSIVE_RESEARCH);
 
 
 
         while (true) {
             System.out.println("Current round: "+gc.round());
             System.out.println("Current Karb: "+gc.karbonite());
+            
+            //*** Unit Manager Handling
             unitManager.printList();
-            // VecUnit is a class that you can think of as similar to ArrayList<Unit>, but immutable.
             ArrayList<BoogUnit>[] units = unitManager.getUnits();
             ArrayList<BoogUnit> deadList = new ArrayList();
             for (int k = 0; k < 7; k++) {
@@ -88,6 +89,15 @@ public class Player {
             for (BoogUnit dead : deadList) {
                 unitManager.remove(dead);
             }
+            //***
+
+            //*** Research Manager Handling
+
+            researchManager.checkCurrentQueue();
+
+            //***
+
+
             /*for (int i = 0; i < units.size(); i++) {
 
                 Unit unit = units.get(i);
