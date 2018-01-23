@@ -10,14 +10,14 @@ public class KnightUnit extends BoogUnit {
         decides whether or not the unit's tag
         needs to be changed.
     */
-    public void adjustTag() {
+    public void adjustTag(UnitManager unitManager) {
 
     }
 
     /*
         decides what movement a unit should make.
     */
-    public void move() {
+    public void move(UnitManager unitManager) {
 
     }
 
@@ -25,7 +25,7 @@ public class KnightUnit extends BoogUnit {
         decides if and where a unit should perform
         an action.
     */
-    public void action() {
+    public void action(UnitManager unitManager) {
 
     }
 }

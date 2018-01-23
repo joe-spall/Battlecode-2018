@@ -59,6 +59,7 @@ public class Player {
             Unit unit = initialUnits.get(i);
             BoogUnit boogUnit = new WorkerUnit(unit, gc, grid);
             unitManager.add(boogUnit);
+            unitManager.changeTag(boogUnit, FACTORY_WORKER);
         }
         unitManager.printList();
         ResearchManager researchManager = new ResearchManager(gc,OFFENSIVE_RESEARCH);
@@ -80,10 +81,11 @@ public class Player {
                         deadList.add(unit);
                         continue;
                     }
+
                     unit.vision();
-                    unit.adjustTag();
-                    unit.move();
-                    unit.action();
+                    unit.adjustTag(unitManager);
+                    unit.move(unitManager);
+                    unit.action(unitManager);
                 }
             }
             for (BoogUnit dead : deadList) {

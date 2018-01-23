@@ -9,14 +9,14 @@ public class RocketUnit extends BoogUnit {
     /*
         DO NOT EDIT. There is only one type of rocket.
     */
-    public void adjustTag() {
+    public void adjustTag(UnitManager unitManager) {
 
     }
 
     /*
         DO NOT EDIT. Rocket's don't move.
     */
-    public void move() {
+    public void move(UnitManager unitManager) {
 
     }
 
@@ -24,7 +24,7 @@ public class RocketUnit extends BoogUnit {
         decides if and where a unit should perform
         an action.
     */
-    public void action() {
+    public void action(UnitManager unitManager) {
 
     }
 }
