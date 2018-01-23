@@ -1,4 +1,8 @@
 import bc.*;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 abstract class BoogUnit {
     private Unit unit;
@@ -75,9 +79,38 @@ abstract class BoogUnit {
         }
     }
 
+    public Direction nextMoveTo(MapLocation goal) {
+        PlanetMap planet = gc.startingMap(gc.planet());
+        HashMap<MapLocation, MapLocation> parent = new HashMap();
+        Direction[] directions = Direction.values();
+        Queue<MapLocation> queue = new LinkedList();
+        ArrayList<MapLocation> visited = new ArrayList<>();
+        visited.add(unit.location().mapLocation());
+        MapLocation location = unit.location().mapLocation();
+        while (!location.equals(goal)) {
+            for (Direction direction : directions) {
+                MapLocation nextLocation = location.add(direction);
+                if (!visited.contains(nextLocation) && planet.onMap(nextLocation) && grid.getTileAt(nextLocation).isPassable()) {
+                    queue.add(nextLocation);
+                    parent.put(nextLocation, location);
+                }
+            }
+            location = queue.remove();
+        }
+        System.out.println(location.getX() + ", " + location.getY());
+        System.out.println(parent.get(location));
+        while (parent.get(location) != null && !parent.get(location).equals(unit.location().mapLocation())) {
+            location = parent.get(location);
+            System.out.println(location.getX() + ", " + location.getY());
+        }
+        return unit.location().mapLocation().directionTo(location);
+    }
+
+
+
     public abstract void adjustTag(UnitManager unitManager);
 
-    public abstract void move();
+    public abstract void move(UnitManager unitManager);
 
     public abstract void action(UnitManager unitManager);
 }

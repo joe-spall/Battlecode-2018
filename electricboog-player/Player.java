@@ -83,7 +83,7 @@ public class Player {
 
                     unit.vision();
                     unit.adjustTag(unitManager);
-                    unit.move();
+                    unit.move(unitManager);
                     unit.action(unitManager);
                 }
             }

@@ -17,7 +17,7 @@ public class KnightUnit extends BoogUnit {
     /*
         decides what movement a unit should make.
     */
-    public void move() {
+    public void move(UnitManager unitManager) {
 
     }
 

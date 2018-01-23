@@ -17,7 +17,7 @@ public class FactoryUnit extends BoogUnit {
     /*
         DO NOT EDIT. Factories don't move.
     */
-    public void move() {
+    public void move(UnitManager unitManager) {
 
     }
 

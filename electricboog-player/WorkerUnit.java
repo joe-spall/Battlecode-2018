@@ -1,4 +1,5 @@
 import bc.*;
+import java.util.ArrayList;
 
 public class WorkerUnit extends BoogUnit {
 
@@ -48,11 +49,43 @@ public class WorkerUnit extends BoogUnit {
 
         if (getTag() == ROCKET_WORKER) {
             VecUnit nearbyUnits = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
+            int count = 0;
             for (int k = 0; k < nearbyUnits.size(); k++) {
-                Unit rocket = nearbyUnits.get(k);
+                if (nearbyUnits.get(k).team().equals(unit.team())) {
+                    count++;
+                }
+            }
+            if (count > 0) {
+                Unit rocket = nearbyUnits.get(0);
                 if (rocket.health() == rocket.maxHealth()) {
                     unitManager.changeTag(this, MARS_FARM_WORKER);
                 }
+            }
+
+        }
+
+        if (getTag() == MARS_FARM_WORKER) {
+            VecUnit nearbyUnits = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
+            int count = 0;
+            for (int k = 0; k < nearbyUnits.size(); k++) {
+                if (nearbyUnits.get(k).team().equals(unit.team())) {
+                    count++;
+                }
+            }
+            if (unitManager.getNumRockets() == 0 && unitManager.getTagWorkers(ROCKET_WORKER).size() == 0 && gc.round() > 750) {
+                unitManager.changeTag(this, ROCKET_WORKER);
+            } else if (unitManager.getNumRockets() == 0) {
+                unitManager.changeTag(this, EARTH_FARM_WORKER);
+            }
+        }
+
+        if (getTag() == EARTH_FARM_WORKER) {
+            if (gc.round() > 725 && unitManager.getNumRockets() < 2) {
+                unitManager.changeTag(this, ROCKET_WORKER);
+            } else if (gc.round() > 725) {
+                unitManager.changeTag(this, MARS_FARM_WORKER);
+            } else if (unitManager.getTagWorkers(FACTORY_WORKER).size() <= 2) {
+                unitManager.changeTag(this, FACTORY_WORKER);
             }
         }
     }
@@ -60,7 +93,7 @@ public class WorkerUnit extends BoogUnit {
     /*
         decides what movement a unit should make.
     */
-    public void move() {
+    public void move(UnitManager unitManager) {
         int id = unit.id();
         Direction[] allDirections = Direction.values();
         if (getTag() == FACTORY_WORKER) {
@@ -163,7 +196,161 @@ public class WorkerUnit extends BoogUnit {
                     }
                 }
             }
+        } else if (getTag() == MARS_FARM_WORKER) {
+            if (gc.planet().equals(Planet.Earth)) {
+                if (!unit.location().isInGarrison()) {
+                    ArrayList<BoogUnit> rockets = unitManager.getRockets();
+                    BoogUnit minRocket = rockets.get(0);
+
+                    long minDistance = rockets.get(0).getUnit().location().mapLocation().distanceSquaredTo(unit.location().mapLocation());
+                    for (BoogUnit rocket : rockets) {
+                        if (rocket.getUnit().structureGarrison().size() != (int) rocket.getUnit().structureMaxCapacity()) {
+                            long distance = rocket.getUnit().location().mapLocation().distanceSquaredTo(unit.location().mapLocation());
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                minRocket = rocket;
+                            }
+                        }
+
+                    }
+                    Direction direction = nextMoveTo(minRocket.getUnit().location().mapLocation());
+                    if (gc.isMoveReady(id) && gc.canMove(id, direction)) {
+                        gc.moveRobot(id, direction);
+                    }
+                }
+            } else {
+                if (gc.isMoveReady(id)) {
+                    VecUnit nearbyUnits = gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), unit.visionRange(), getEnemy());
+                    boolean found = false;
+                    if (nearbyUnits.size() > 0) {
+                        for (int k = 0; k < nearbyUnits.size(); k++) {
+                            Unit enemy = nearbyUnits.get(k);
+                            UnitType enemyType = enemy.unitType();
+                            if (!enemyType.equals(UnitType.Worker) && !enemyType.equals(UnitType.Factory) && !enemyType.equals(UnitType.Rocket)) {
+                                if (enemy.attackRange() >= unit.location().mapLocation().distanceSquaredTo(enemy.location().mapLocation())) {
+                                    found = true;
+                                    Direction opposite = unit.location().mapLocation().directionTo(enemy.location().mapLocation());
+                                    opposite = bc.bcDirectionOpposite(opposite);
+                                    for (int j = 0; j < allDirections.length; j++) {
+                                        if (opposite.equals(allDirections[j])) {
+                                            if (gc.canMove(id, allDirections[j])) {
+                                                gc.moveRobot(id, allDirections[j]);
+                                            } else if (gc.canMove(id, allDirections[j + 1])) {
+                                                gc.moveRobot(id, allDirections[j + 1]);
+                                            } else if (gc.canMove(id, allDirections[j - 1])) {
+                                                gc.moveRobot(id, allDirections[j - 1]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!found) {
+                        if (grid.getTileAt(unit.location().mapLocation()).getKarbonite() == 0) {
+                            long maxKarb = 0;
+                            Direction maxDirection = allDirections[0];
+                            for (Direction direction: allDirections) {
+                                MapLocation newLocation = unit.location().mapLocation().add(direction);
+
+                                    long karb = grid.getTileAt(unit.location().mapLocation()).getKarbonite();
+                                    if (karb > maxKarb) {
+                                        maxKarb = karb;
+                                        maxDirection = direction;
+                                    }
+
+                            }
+                            if (maxKarb == 0) {
+                                for (Direction direction: allDirections) {
+                                    MapLocation newLocation = unit.location().mapLocation().add(direction);
+                                    MapLocation karbLocation = unit.location().mapLocation().add(direction).add(direction);
+                                    if (gc.isOccupiable(newLocation) != 0) {
+                                        long karb = grid.getTileAt(karbLocation).getKarbonite();
+                                        if (karb > maxKarb) {
+                                            maxKarb = karb;
+                                            maxDirection = direction;
+                                        }
+                                    }
+                                }
+                                if (gc.canMove(id, maxDirection)) {
+                                    gc.moveRobot(id, maxDirection);
+                                }
+                            }
+
+                        }
+                    }
+
+
+
+                }
+            }
+        } else if (getTag() == EARTH_FARM_WORKER) {
+            if (gc.isMoveReady(id)) {
+                VecUnit nearbyUnits = gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), unit.visionRange(), getEnemy());
+                boolean found = false;
+                if (nearbyUnits.size() > 0) {
+                    for (int k = 0; k < nearbyUnits.size(); k++) {
+                        Unit enemy = nearbyUnits.get(k);
+                        UnitType enemyType = enemy.unitType();
+                        if (!enemyType.equals(UnitType.Worker) && !enemyType.equals(UnitType.Factory) && !enemyType.equals(UnitType.Rocket)) {
+                            if (enemy.attackRange() >= unit.location().mapLocation().distanceSquaredTo(enemy.location().mapLocation())) {
+                                found = true;
+                                Direction opposite = unit.location().mapLocation().directionTo(enemy.location().mapLocation());
+                                opposite = bc.bcDirectionOpposite(opposite);
+                                for (int j = 0; j < allDirections.length; j++) {
+                                    if (opposite.equals(allDirections[j])) {
+                                        if (gc.canMove(id, allDirections[j])) {
+                                            gc.moveRobot(id, allDirections[j]);
+                                        } else if (gc.canMove(id, allDirections[j + 1])) {
+                                            gc.moveRobot(id, allDirections[j + 1]);
+                                        } else if (gc.canMove(id, allDirections[j - 1])) {
+                                            gc.moveRobot(id, allDirections[j - 1]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!found) {
+                    if (grid.getTileAt(unit.location().mapLocation()).getKarbonite() == 0) {
+                        long maxKarb = 0;
+                        Direction maxDirection = allDirections[0];
+                        for (Direction direction: allDirections) {
+                            MapLocation newLocation = unit.location().mapLocation().add(direction);
+
+                                long karb = grid.getTileAt(unit.location().mapLocation()).getKarbonite();
+                                if (karb > maxKarb) {
+                                    maxKarb = karb;
+                                    maxDirection = direction;
+                                }
+
+                        }
+                        if (maxKarb == 0) {
+                            for (Direction direction: allDirections) {
+                                MapLocation newLocation = unit.location().mapLocation().add(direction);
+                                MapLocation karbLocation = unit.location().mapLocation().add(direction).add(direction);
+                                if (gc.isOccupiable(newLocation) != 0) {
+                                    long karb = grid.getTileAt(karbLocation).getKarbonite();
+                                    if (karb > maxKarb) {
+                                        maxKarb = karb;
+                                        maxDirection = direction;
+                                    }
+                                }
+                            }
+                            if (gc.canMove(id, maxDirection)) {
+                                gc.moveRobot(id, maxDirection);
+                            }
+                        }
+
+                    }
+                }
+
+
+
+            }
         }
+
     }
 
     /*
@@ -172,6 +359,7 @@ public class WorkerUnit extends BoogUnit {
     */
     public void action(UnitManager unitManager) {
         int id = unit.id();
+        Direction[] allDirections = Direction.values();
         Direction[] directions = new Direction[4];
         directions[0] = Direction.North;
         directions[1] = Direction.East;
@@ -206,8 +394,8 @@ public class WorkerUnit extends BoogUnit {
             VecUnit nearbyRocket = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
             for (int k = 0; k < nearbyRocket.size(); k++) {
                 Unit rocket = nearbyRocket.get(k);
-                if (gc.canRepair(id, rocket.id())) {
-                    gc.repair(id, rocket.id());
+                if (gc.canBuild(id, rocket.id())) {
+                    gc.build(id, rocket.id());
                 }
             }
             VecUnit nearbyUnits = gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), unit.visionRange(), getEnemy());
@@ -234,6 +422,56 @@ public class WorkerUnit extends BoogUnit {
                         }
                     }
                 }
+            }
+        } else if (getTag() == MARS_FARM_WORKER) {
+            if (gc.planet() == Planet.Earth) {
+                VecUnit nearbyRocket = gc.senseNearbyUnitsByType(unit.location().mapLocation(), 5, UnitType.Rocket);
+                for (int k = 0; k < nearbyRocket.size(); k++) {
+                    Unit rocket = nearbyRocket.get(k);
+                    if (gc.canLoad(rocket.id(), id)) {
+                        gc.load(rocket.id(), id);
+                    }
+                }
+            } else {
+                long maxKarb = 0;
+                Direction maxDirection = allDirections[0];
+                if (gc.karboniteAt(unit.location().mapLocation()) != 0) {
+                    for (Direction direction: allDirections) {
+                        MapLocation newLocation = unit.location().mapLocation().add(direction);
+
+                        if (grid.isOnMap(newLocation)) {
+                            long karb = grid.getTileAt(newLocation).getKarbonite();
+                            if (karb > maxKarb) {
+                                maxKarb = karb;
+                                maxDirection = direction;
+                            }
+                        }
+
+                    }
+                }
+                if (gc.canHarvest(id, maxDirection)) {
+                    gc.harvest(id, maxDirection);
+                }
+            }
+        } else if (getTag() == EARTH_FARM_WORKER) {
+            long maxKarb = 0;
+            Direction maxDirection = allDirections[0];
+            if (gc.karboniteAt(unit.location().mapLocation()) != 0) {
+                for (Direction direction: allDirections) {
+                    MapLocation newLocation = unit.location().mapLocation().add(direction);
+
+                    if (grid.isOnMap(newLocation)) {
+                        long karb = grid.getTileAt(newLocation).getKarbonite();
+                        if (karb > maxKarb) {
+                            maxKarb = karb;
+                            maxDirection = direction;
+                        }
+                    }
+
+                }
+            }
+            if (gc.canHarvest(id, maxDirection)) {
+                gc.harvest(id, maxDirection);
             }
         }
     }

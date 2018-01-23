@@ -15,4 +15,13 @@ public class Grid {
     public Tile getTileAt(int x, int y) {
         return grid[x][y];
     }
+
+    public Tile getTileAt(MapLocation location) {
+
+        return grid[location.getX()][location.getY()];
+    }
+
+    public boolean isOnMap(MapLocation location) {
+        return location.getX() < grid.length && location.getX() >= 0 && location.getY() < grid[0].length && location.getY() >= 0;
+    }
 }

@@ -16,7 +16,7 @@ public class RocketUnit extends BoogUnit {
     /*
         DO NOT EDIT. Rocket's don't move.
     */
-    public void move() {
+    public void move(UnitManager unitManager) {
 
     }
 

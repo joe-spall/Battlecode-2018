@@ -175,7 +175,7 @@ class UnitManager {
         for (ArrayList<BoogUnit> unitArray : units) {
             System.out.print("New Unit: ");
             for (BoogUnit unit : unitArray) {
-                System.out.print(unit.getUnit().unitType() + ": " + unit.getUnit().id() + ", ");
+                System.out.print(unit.getUnit().unitType() + ": " + unit.getUnit().id() + ", " + unit.getTag() + ".  ");
             }
             System.out.print(".");
         }
