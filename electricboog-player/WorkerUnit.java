@@ -80,7 +80,7 @@ public class WorkerUnit extends BoogUnit {
         }
 
         if (getTag() == EARTH_FARM_WORKER) {
-            if (gc.round() > 725 && unitManager.getNumRockets() < 2) {
+            if (gc.round() > 500 && (unitManager.getTagWorkers(ROCKET_WORKER) == null || unitManager.getTagWorkers(ROCKET_WORKER).size() <= 2) && unitManager.getNumRockets() < 2) {
                 unitManager.changeTag(this, ROCKET_WORKER);
             } else if (gc.round() > 725) {
                 unitManager.changeTag(this, MARS_FARM_WORKER);
@@ -183,7 +183,7 @@ public class WorkerUnit extends BoogUnit {
                         Direction opposite = unit.location().mapLocation().directionTo(enemy.location().mapLocation());
                         opposite = bc.bcDirectionOpposite(opposite);
                         for (int j = 0; j < allDirections.length; j++) {
-                            if (opposite.equals(allDirections[j])) {
+                            if (opposite.equals(allDirections[j]) && gc.isMoveReady(id)) {
                                 if (gc.canMove(id, allDirections[j])) {
                                     gc.moveRobot(id, allDirections[j]);
                                 } else if (gc.canMove(id, allDirections[j + 1])) {
