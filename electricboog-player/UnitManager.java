@@ -27,14 +27,6 @@ class UnitManager {
         return units[0];
     }
 
-    public int getNumRangers() {
-        return units[2].size();
-    }
-
-    public ArrayList<BoogUnit> getRangers() {
-        return units[2];
-    }
-
     public int getNumKnights() {
         return units[1].size();
     }
@@ -42,7 +34,15 @@ class UnitManager {
     public ArrayList<BoogUnit> getKnights() {
         return units[1];
     }
+    
+    public int getNumRangers() {
+        return units[2].size();
+    }
 
+    public ArrayList<BoogUnit> getRangers() {
+        return units[2];
+    }
+    
     public int getNumMages() {
         return units[3].size();
     }
@@ -75,7 +75,7 @@ class UnitManager {
         return units[6];
     }
 
-    public ArrayList<BoogUnit> getTagWorkers(char tag) {
+    public ArrayList<BoogUnit> getTagUnits(char tag) {
         return tagUnits.get(tag);
     }
 
