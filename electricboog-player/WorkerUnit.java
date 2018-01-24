@@ -36,10 +36,8 @@ public class WorkerUnit extends BoogUnit {
                     canBuild = true;
                 }
             }
-            if (!canBuild) {
-                if (gc.researchInfo().getLevel(UnitType.Rocket) >= 1 && (unitManager.getTagWorkers(ROCKET_WORKER) == null || unitManager.getTagWorkers(ROCKET_WORKER).size() <= 2) && gc.karbonite() > 100) {
-                    unitManager.changeTag(this, ROCKET_WORKER);
-                }
+            if (!canBuild || unitManager.getNumFactories() > 8) {
+
                 unitManager.changeTag(this, EARTH_FARM_WORKER);
             }
             if ((unitManager.getTagWorkers(ROCKET_WORKER) == null || unitManager.getTagWorkers(ROCKET_WORKER).size() <= 2) && gc.round() > 500) {
