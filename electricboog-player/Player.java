@@ -61,6 +61,40 @@ public class Player {
             unitManager.add(boogUnit);
             unitManager.changeTag(boogUnit, FACTORY_WORKER);
         }
+        if (initialUnits.size() != 0) {
+            Unit testUnit = initialUnits.get(0);
+            int x = testUnit.location().mapLocation().getX();
+            int y = testUnit.location().mapLocation().getY();
+            int width = grid.getWidth();
+            int height = grid.getHeight();
+            if (x * 3 < width) {
+                if (y * 3 < height) {
+                    grid.setEnemyDirection(Direction.Southeast);
+                } else if (y * 3 < height * 2) {
+                    grid.setEnemyDirection(Direction.East);
+                } else {
+                    grid.setEnemyDirection(Direction.Northeast);
+                }
+            } else if (x * 3 < width * 2) {
+                if (y * 3 < height) {
+                    grid.setEnemyDirection(Direction.South);
+                } else if (y * 3 < height * 2) {
+                    grid.setEnemyDirection(Direction.East);
+                } else {
+                    grid.setEnemyDirection(Direction.North);
+                }
+            } else {
+                if (y * 3 < height) {
+                    grid.setEnemyDirection(Direction.Southwest);
+                } else if (y * 3 < height * 2) {
+                    grid.setEnemyDirection(Direction.West);
+                } else {
+                    grid.setEnemyDirection(Direction.Northwest);
+                }
+            }
+        }
+
+
         unitManager.printList();
         ResearchManager researchManager = new ResearchManager(gc,OFFENSIVE_RESEARCH);
 
@@ -69,7 +103,7 @@ public class Player {
         while (true) {
             System.out.println("Current round: "+gc.round());
             System.out.println("Current Karb: "+gc.karbonite());
-            
+
             //*** Unit Manager Handling
             unitManager.printList();
             ArrayList<BoogUnit>[] units = unitManager.getUnits();
