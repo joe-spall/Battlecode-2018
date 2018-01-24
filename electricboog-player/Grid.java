@@ -11,6 +11,7 @@ public class Grid {
                 grid[w][h] = new Tile(new MapLocation(map.getPlanet(), w, h), map);
             }
         }
+        enemyDirection = Direction.Northwest;
     }
 
     public int getWidth() {

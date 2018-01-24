@@ -82,7 +82,7 @@ public class WorkerUnit extends BoogUnit {
                 unitManager.changeTag(this, ROCKET_WORKER);
             } else if (gc.round() > 725) {
                 unitManager.changeTag(this, MARS_FARM_WORKER);
-            } else if (unitManager.getTagWorkers(FACTORY_WORKER).size() <= 2) {
+            } else if (unitManager.getTagWorkers(FACTORY_WORKER).size() <= 2 && unitManager.getNumFactories() < 8) {
                 unitManager.changeTag(this, FACTORY_WORKER);
             }
         }
