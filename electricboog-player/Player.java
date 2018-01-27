@@ -7,38 +7,7 @@ import java.util.ArrayList;
 
 public class Player {
 
-    private final static char ROCKET_WORKER = 'a';
-    private final static char FACTORY_WORKER = 'b';
-    private final static char EARTH_FARM_WORKER = 'c';
-    private final static char MARS_FARM_WORKER = 'd';
-    private final static char EARTH_DEFENSE_KNIGHT = 'e';
-    private final static char MARS_DEFENSE_KNIGHT = 'f';
-    private final static char EARTH_ATTACK_KNIGHT = 'g';
-    private final static char MARS_ATTACK_KNIGHT = 'h';
-    private final static char EARTH_MAGE = 'i';
-    private final static char MARS_MAGE = 'j';
-    private final static char EARTH_SCOUT_RANGER = 'k';
-    private final static char MARS_SCOUT_RANGER = 'l';
-    private final static char SNIPER_RANGER = 'm';
-    private final static char EARTH_HEALER = 'n';
-    private final static char MARS_HEALER = 'o';
-
-    private final static char EARTH_RESEARCH = 'b';
-    private final static char MARS_RESEARCH = 'b';
-    private final static char OFFENSIVE_RESEARCH = 'a';
-    private final static char DEFENSIVE_RESEARCH = 'b';
-    private final static char ROCKET_RESEARCH = 'c';
-
     public static void main(String[] args) {
-        // MapLocation is a data structure you'll use a lot.
-        MapLocation loc = new MapLocation(Planet.Earth, 10, 20);
-        System.out.println("loc: "+loc+", one step to the Northwest: "+loc.add(Direction.Northwest));
-        System.out.println("loc x: "+loc.getX());
-
-        // One slightly weird thing: some methods are currently static methods on a static class called bc.
-        // This will eventually be fixed :/
-        System.out.println("Opposite of " + Direction.North + ": " + bc.bcDirectionOpposite(Direction.North));
-
         // Connect to the manager, starting the game
         GameController gc = new GameController();
         Team enemy = null;
@@ -59,7 +28,7 @@ public class Player {
             Unit unit = initialUnits.get(i);
             BoogUnit boogUnit = new WorkerUnit(unit, gc, grid);
             unitManager.add(boogUnit);
-            unitManager.changeTag(boogUnit, FACTORY_WORKER);
+            unitManager.changeTag(boogUnit, UnitTag.FACTORY_WORKER);
         }
         if (initialUnits.size() != 0) {
             Unit testUnit = initialUnits.get(0);
@@ -96,7 +65,7 @@ public class Player {
 
 
         unitManager.printList();
-        ResearchManager researchManager = new ResearchManager(gc,OFFENSIVE_RESEARCH);
+        ResearchManager researchManager = new ResearchManager(gc,ResearchTag.OFFENSIVE);
 
 
 

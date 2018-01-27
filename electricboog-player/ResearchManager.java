@@ -2,22 +2,17 @@ import bc.*;
 import java.util.ArrayList;
 class ResearchManager {
 
-
-    private final static char OFFENSIVE_RESEARCH = 'a';
-    private final static char DEFENSIVE_RESEARCH = 'b';
-    private final static char ROCKET_RESEARCH = 'c';
-    private final static char WORKER_RESEARCH = 'd';
     private ArrayList<UnitType> offensiveUnits;
     private ArrayList<UnitType> defensiveUnits;
 
     private GameController gameController;
-    private char objectiveTag;
+    private ResearchTag tag;
 
     /*
         Constructor 
     */
 
-    ResearchManager(GameController gameController, char _objectiveTag) {
+    ResearchManager(GameController gameController, ResearchTag _tag) {
         // TODO Set priority of units
         offensiveUnits = new ArrayList<UnitType>();
         offensiveUnits.add(UnitType.Ranger);
@@ -29,7 +24,7 @@ class ResearchManager {
         defensiveUnits.add(UnitType.Knight);
         defensiveUnits.add(UnitType.Healer);
 
-        objectiveTag = _objectiveTag;
+        tag = _tag;
         this.gameController = gameController;
         this.gameController.queueResearch(UnitType.Worker);
         System.out.println("Research: Initalized");
@@ -62,50 +57,50 @@ class ResearchManager {
             Works on Rocket. If completed, works on Worker. If completed, switches to Offensive.
         */
 
-        if (objectiveTag == ROCKET_RESEARCH) {
+        if (tag == ResearchTag.ROCKET) {
             if (resInfo.getLevel(UnitType.Rocket) < 3) {
                 gameController.queueResearch(UnitType.Rocket);
                 System.out.println("Research: Starting, Type: Rocket, Level: " + resInfo.getLevel(UnitType.Rocket));
                 return;
             } else {
                  if (resInfo.getLevel(UnitType.Worker) < 3) {
-                    setCurrentTags(WORKER_RESEARCH);
+                    setCurrentTags(ResearchTag.WORKER);
                     return;
                  }
                  else {
-                    setCurrentTags(OFFENSIVE_RESEARCH);
+                    setCurrentTags(ResearchTag.OFFENSIVE);
                     return;
                  }
             }
         }
 
-        if (objectiveTag == WORKER_RESEARCH) {
+        if (tag == ResearchTag.WORKER) {
             if (resInfo.getLevel(UnitType.Worker) < 3) {
                 gameController.queueResearch(UnitType.Worker);
                 System.out.println("Research: Starting, Type: Worker, Level: " + resInfo.getLevel(UnitType.Worker));
                 return;
             } else {
-                setCurrentTags(DEFENSIVE_RESEARCH);
+                setCurrentTags(ResearchTag.DEFENSIVE);
                 return;
             }
         }
 
-        if (objectiveTag == OFFENSIVE_RESEARCH) {
+        if (tag == ResearchTag.DEFENSIVE) {
 
             int minIndx = findMinIdxUnits(resInfo, offensiveUnits);
             if(resInfo.getLevel(offensiveUnits.get(minIndx)) == 3){
-                setCurrentTags(WORKER_RESEARCH);
+                setCurrentTags(ResearchTag.WORKER);
                 return;
             }
             gameController.queueResearch(offensiveUnits.get(minIndx));
             System.out.println("Research: Starting, Type: Offensive, Unit: " + offensiveUnits.get(minIndx) + ", Level: " + resInfo.getLevel(offensiveUnits.get(minIndx)));
             return;
 
-        } else if (objectiveTag == DEFENSIVE_RESEARCH) {
+        } else if (tag == ResearchTag.DEFENSIVE) {
                 
             int minIndx = findMinIdxUnits(resInfo, defensiveUnits);
             if (resInfo.getLevel(defensiveUnits.get(minIndx)) == 3) {
-                setCurrentTags(WORKER_RESEARCH);
+                setCurrentTags(ResearchTag.WORKER);
                 return;
             }
             gameController.queueResearch(defensiveUnits.get(minIndx));
@@ -114,23 +109,10 @@ class ResearchManager {
         }
     }
 
-    public void setCurrentTags(char newObjectiveTag) {
+    public void setCurrentTags(ResearchTag newTag) {
         // TODO Calculate tag strategy
-        objectiveTag = newObjectiveTag;
-
-        String currentType = "";
-        if (newObjectiveTag == ROCKET_RESEARCH) {
-            currentType = "Rocket";
-        } else if (newObjectiveTag == WORKER_RESEARCH) { 
-            currentType = "Worker";
-        } else if (newObjectiveTag == OFFENSIVE_RESEARCH) {
-            currentType = "Offensive"; 
-        } else if (newObjectiveTag == DEFENSIVE_RESEARCH) {
-            currentType = "Defensive";
-        } else {
-            currentType = "WAT";
-        }
-        System.out.println("Research: Switching, Type: " + currentType);
+        tag = newTag;
+        System.out.println("Research: Switching, Type: " + tag);
         reset();
         setQueueForTags();
     }

@@ -4,8 +4,7 @@ import java.util.HashMap;
 
 class UnitManager {
     private ArrayList<BoogUnit>[] units;
-    private HashMap<Character, ArrayList<BoogUnit>> tagUnits;
-
+    private HashMap<UnitTag, ArrayList<BoogUnit>> tagUnits;
 
     UnitManager() {
         units = new ArrayList[7];
@@ -75,7 +74,7 @@ class UnitManager {
         return units[6];
     }
 
-    public ArrayList<BoogUnit> getTagUnits(char tag) {
+    public ArrayList<BoogUnit> getTagUnits(UnitTag tag) {
         return tagUnits.get(tag);
     }
 
@@ -127,8 +126,8 @@ class UnitManager {
         }
     }
 
-    public void changeTag(BoogUnit unit, char tag) {
-        if (unit.getTag() == '0') {
+    public void changeTag(BoogUnit unit, UnitTag tag) {
+        if (unit.getTag() == UnitTag.NONE) {
             if (tagUnits.containsKey(tag)) {
                 tagUnits.get(tag).add(unit);
             } else {
@@ -138,7 +137,6 @@ class UnitManager {
             }
         } else {
             if (tagUnits.containsKey(tag)) {
-
                 tagUnits.get(tag).add(unit);
                 tagUnits.get(unit.getTag()).remove(unit);
             } else {
@@ -151,34 +149,20 @@ class UnitManager {
         unit.setTag(tag);
     }
 
-    public void changeStatus(BoogUnit unit, char tag) {
-        if (unit.getStatus() == '0') {
-            if (tagUnits.containsKey(tag)) {
-                tagUnits.get(tag).add(unit);
-            } else {
-                ArrayList<BoogUnit> newArray = new ArrayList<BoogUnit>();
-                newArray.add(unit);
-                tagUnits.put(tag, newArray);
-            }
-        } else {
-            if (tagUnits.containsKey(tag)) {
-
-                tagUnits.get(tag).add(unit);
-                tagUnits.get(unit.getStatus()).remove(unit);
-            }
-        }
-        unit.setStatus(tag);
-    }
-
     public void printList() {
-        System.out.print("[");
+        System.out.print("UnitManager: ");
         for (ArrayList<BoogUnit> unitArray : units) {
-            System.out.print("New Unit: ");
-            for (BoogUnit unit : unitArray) {
-                System.out.print(unit.getUnit().unitType() + ": " + unit.getUnit().id() + ", " + unit.getTag() + ".  ");
+            if(unitArray.size() > 0){
+                UnitType unitTypeName = unitArray.get(0).getUnit().unitType();
+                System.out.print(unitTypeName + ": ");
+                for (BoogUnit unit : unitArray) {
+                    System.out.print(unit.getUnit().id() + ", " + unit.getTag() + ";  ");
+                }
+                System.out.print(";");
+
             }
-            System.out.print(".");
+            
         }
-        System.out.println("]");
+        System.out.println("");
     }
 }

@@ -6,16 +6,16 @@ import java.util.LinkedList;
 
 abstract class BoogUnit {
     private Unit unit;
-    private char tag;
-    private char status;
+    private UnitTag tag;
+    private StatusTag status;
     private Grid grid;
     private GameController gc;
     private Team enemy;
 
     BoogUnit(Unit unit, GameController gc, Grid grid) {
         this.unit = unit;
-        tag = '0';
-        status = '0';
+        tag = UnitTag.NONE;
+        status = StatusTag.NONE;
         this.gc = gc;
         this.grid = grid;
         enemy = null;
@@ -26,8 +26,7 @@ abstract class BoogUnit {
         }
     }
 
-    public void setTag(char tagName) {
-
+    public void setTag(UnitTag tagName) {
         tag = tagName;
     }
 
@@ -35,15 +34,15 @@ abstract class BoogUnit {
         return enemy;
     }
 
-    public char getTag() {
+    public UnitTag getTag() {
         return tag;
     }
 
-    public void setStatus(char tagName) {
+    public void setStatus(StatusTag tagName) {
         status = tagName;
     }
 
-    public char getStatus() {
+    public StatusTag getStatus() {
         return status;
     }
 
